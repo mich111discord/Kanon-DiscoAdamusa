@@ -20,32 +20,54 @@
         }
         header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
+            position: relative;
+            width: 100%;
+            max-width: 900px;
         }
         h1 {
             color: #f1c40f;
             margin: 0 0 5px 0;
             font-size: 2.2rem;
             letter-spacing: 1px;
-            text-shadow: 0 2px 10px rgba(241, 196, 15, 0.2);
+            text-shadow: 0 2px 10px rgba(241, 196, 15, 0.4);
         }
         .subtitle {
             color: #8b949e;
             font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+        .discord-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #5865F2;
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .discord-btn:hover {
+            background-color: #4752C4;
+            transform: translateY(-1px);
         }
         .container {
             width: 100%;
             max-width: 900px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
         }
         #player-box {
-            background-color: #161b22;
-            border: 1px solid #30363d;
+            background: linear-gradient(145deg, #1c180a, #161b22);
+            border: 2px solid #f1c40f;
             border-radius: 12px;
-            padding: 15px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            padding: 18px;
+            box-shadow: 0 0 15px rgba(241, 196, 15, 0.25), 0 8px 24px rgba(0,0,0,0.6);
+            position: relative;
         }
         video {
             width: 100%;
@@ -53,16 +75,57 @@
             border-radius: 8px;
             background-color: #000;
             outline: none;
+            border: 1px solid rgba(241, 196, 15, 0.3);
+        }
+        .cdn-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+            font-size: 0.82rem;
+            color: #2ecc71;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .cdn-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #2ecc71;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #2ecc71;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
         }
         #now-playing {
-            margin-top: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
+            margin-top: 10px;
+            font-size: 1.15rem;
+            font-weight: 700;
             color: #f1c40f;
             text-align: center;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+        }
+        #search-box {
+            width: 100%;
+            padding: 12px 16px;
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            color: #e6edf3;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        #search-box:focus {
+            border-color: #f1c40f;
         }
         #playlist-box {
             background-color: #161b22;
@@ -74,9 +137,9 @@
         }
         .track-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 12px 15px;
+            gap: 12px;
+            padding: 10px 15px;
             border-bottom: 1px solid #21262d;
             border-radius: 6px;
             cursor: pointer;
@@ -93,6 +156,28 @@
             border-left: 4px solid #f1c40f;
             color: #f1c40f;
         }
+        .track-thumb {
+            width: 64px;
+            height: 36px;
+            object-fit: cover;
+            border-radius: 4px;
+            flex-shrink: 0;
+            background-color: #0b0e14;
+            border: 1px solid #30363d;
+        }
+        .track-thumb.placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+        .track-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex: 1;
+            min-width: 0;
+        }
         .track-title {
             font-size: 0.95rem;
             word-break: break-word;
@@ -103,7 +188,6 @@
             color: #8b949e;
             white-space: nowrap;
         }
-        /* Custom Scrollbar */
         #playlist-box::-webkit-scrollbar {
             width: 8px;
         }
@@ -114,6 +198,11 @@
             background: #30363d;
             border-radius: 4px;
         }
+        .loading-msg, .error-msg {
+            text-align: center;
+            padding: 20px;
+            color: #8b949e;
+        }
     </style>
 </head>
 <body>
@@ -121,6 +210,12 @@
     <header>
         <h1>👑 Kanon DiscoAdamusa 2026 👑</h1>
         <div class="subtitle">Oficjalne Archiwum Wideo 1080p</div>
+        <a href="https://discord.gg/ErbWv3kKCB" target="_blank" class="discord-btn">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M13.545 2.907a13.227 13.227 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.19 12.19 0 0 0-3.658 0 8.258 8.258 0 0 0-.412-.833.051.051 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.041.041 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032c.001.014.01.028.021.037a13.276 13.276 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019c.308-.42.582-.863.818-1.329a.05.05 0 0 0-.01-.059.051.051 0 0 0-.018-.011 8.875 8.875 0 0 1-1.248-.595.05.05 0 0 1-.02-.066.051.051 0 0 1 .015-.019c.084-.063.168-.129.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.052.052 0 0 1 .053.007c.08.066.164.132.248.195a.051.051 0 0 1-.004.085 8.254 8.254 0 0 1-1.249.594.05.05 0 0 0-.03.07.05.05 0 0 0 .02.018c.24.464.512.907.817 1.329a.05.05 0 0 0 .056.019 13.235 13.235 0 0 0 4.001-2.02.049.049 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.034.034 0 0 0-.02-.019zM5.318 10.366c-.786 0-1.432-.72-1.432-1.602 0-.883.633-1.602 1.432-1.602.798 0 1.444.726 1.432 1.602 0 .882-.634 1.602-1.432 1.602zm4.72 0c-.786 0-1.432-.72-1.432-1.602 0-.883.633-1.602 1.432-1.602.798 0 1.444.726 1.432 1.602 0 .882-.634 1.602-1.432 1.602z"/>
+            </svg>
+            Dołącz do Discorda
+        </a>
     </header>
 
     <div class="container">
@@ -129,232 +224,110 @@
                 <source src="" type="video/mp4">
             </video>
             <div id="now-playing">Wybierz utwór z listy...</div>
+            <div class="cdn-status">
+                <div class="cdn-dot"></div>
+                <span>Łączenie z CDN: GitHub Releases 1080p</span>
+            </div>
         </div>
 
-        <div id="playlist-box" id="playlist">
-            <!-- Utwory ładowane z JS -->
+        <input type="text" id="search-box" placeholder="🔍 Szukaj hitu DiscoAdamusa (np. 67, PHONK, BANAN)...">
+
+        <div id="playlist-box">
+            <div class="loading-msg">Ładowanie playlisty...</div>
         </div>
     </div>
 
     <script>
-        const tracks = [
-    {
-        "id": 1,
-        "title": "67 I DO PIECA Disco Adamus viral tiktok tiktokvideo",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/67.I.DO.PIECA.Disco.Adamus.viral.tiktok.tiktokvideo.mp4",
-        "size": "64.2 MB"
-    },
-    {
-        "id": 2,
-        "title": "Banan34ketchup Disco Adamus Sigma Boy 67",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/Banan34ketchup.Disco.Adamus.Sigma.Boy.67.mp4",
-        "size": "18.4 MB"
-    },
-    {
-        "id": 3,
-        "title": "BINGO Disco Adamus viral",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/BINGO.Disco.Adamus.viral.mp4",
-        "size": "26.1 MB"
-    },
-    {
-        "id": 4,
-        "title": "BURGER67 Disco Adamus Nowosc burger",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/BURGER67.Disco.Adamus.Nowosc.burger.mp4",
-        "size": "53.6 MB"
-    },
-    {
-        "id": 5,
-        "title": "CHILBOMBA Disco Adamus viral",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/CHILBOMBA.Disco.Adamus.viral.mp4",
-        "size": "26.7 MB"
-    },
-    {
-        "id": 6,
-        "title": "CITY BOY Disco Adamus Nowosc 2026 city cityboy",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/CITY.BOY.Disco.Adamus.Nowosc.2026.city.cityboy.mp4",
-        "size": "62.1 MB"
-    },
-    {
-        "id": 7,
-        "title": "DISCO ADAMUS Bialystok Remix NOWOSC 2024",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/DISCO.ADAMUS.Bialystok.Remix.NOWOSC.2024.mp4",
-        "size": "23.0 MB"
-    },
-    {
-        "id": 8,
-        "title": "Disco Adamus break dance Poland headspin banka 2001",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/Disco.Adamus.break.dance.Poland.headspin.banka.2001.mp4",
-        "size": "3.2 MB"
-    },
-    {
-        "id": 9,
-        "title": "Disco Adamus Sigma Boy 2025 techno version",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/Disco.Adamus.Sigma.Boy.2025.techno.version.mp4",
-        "size": "71.2 MB"
-    },
-    {
-        "id": 10,
-        "title": "GOAT - Disco Adamus",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/GOAT.-.Disco.Adamus.mp4",
-        "size": "97.6 MB"
-    },
-    {
-        "id": 11,
-        "title": "KAJZERECZKI PAROWECZKI I CZTEROPAK Disco Adamus Nowosc",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/KAJZERECZKI.PAROWECZKI.I.CZTEROPAK.Disco.Adamus.Nowosc.mp4",
-        "size": "11.6 MB"
-    },
-    {
-        "id": 12,
-        "title": "KAUCJA 67 Disco Adamus Sigma Boy",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/KAUCJA.67.Disco.Adamus.Sigma.Boy.mp4",
-        "size": "16.4 MB"
-    },
-    {
-        "id": 13,
-        "title": "Krol bezrobocia Disco Adamus",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/Krol.bezrobocia.Disco.Adamus.mp4",
-        "size": "9.1 MB"
-    },
-    {
-        "id": 14,
-        "title": "LUBIE TORTY MALINOWE - Disco Adamus torta torty",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/LUBIE.TORTY.MALINOWE.-.Disco.Adamus.torta.torty.mp4",
-        "size": "17.4 MB"
-    },
-    {
-        "id": 15,
-        "title": "MANGO 67 MUSZTARDA Disco Adamus",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/MANGO.67.MUSZTARDA.Disco.Adamus.mp4",
-        "size": "57.5 MB"
-    },
-    {
-        "id": 16,
-        "title": "MANGO67 DiscoAdamusSigmaBoy Rastafarianin 2025 Viral Tiktok Nowosc 67 mango sigmaboy viral",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/MANGO67.DiscoAdamusSigmaBoy.Rastafarianin.2025.Viral.Tiktok.Nowosc.67.mango.sigmaboy.viral.mp4",
-        "size": "55.7 MB"
-    },
-    {
-        "id": 17,
-        "title": "MEGA TUFF Disco Adamus 2026 Nowosc",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/MEGA.TUFF.Disco.Adamus.2026.Nowosc.mp4",
-        "size": "66.9 MB"
-    },
-    {
-        "id": 18,
-        "title": "PADA DESZCZYK POPADUJE Disco Adamus",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/PADA.DESZCZYK.POPADUJE.Disco.Adamus.mp4",
-        "size": "19.3 MB"
-    },
-    {
-        "id": 19,
-        "title": "PHONK Mango Musztarda 67 i do pieca Disco Adamus SigmaBoy phonk phonkmusic",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/PHONK.Mango.Musztarda.67.i.do.pieca.Disco.Adamus.SigmaBoy.phonk.phonkmusic.mp4",
-        "size": "9.9 MB"
-    },
-    {
-        "id": 20,
-        "title": "Phonk Tiki tiki plakal plakal Disco Adamus tiktok viral",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/Phonk.Tiki.tiki.plakal.plakal.Disco.Adamus.tiktok.viral.mp4",
-        "size": "19.0 MB"
-    },
-    {
-        "id": 21,
-        "title": "SIGMABOY 2026 Disco Adamus polsat mustbethemusic",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/SIGMABOY.2026.Disco.Adamus.polsat.mustbethemusic.mp4",
-        "size": "51.3 MB"
-    },
-    {
-        "id": 22,
-        "title": "SPLYWAJ splyweczka Disco Adamus SIGMA BOY",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/SPLYWAJ.splyweczka.Disco.Adamus.SIGMA.BOY.mp4",
-        "size": "12.1 MB"
-    },
-    {
-        "id": 23,
-        "title": "SZPONCIC SZPONT Disco Adamus Nowosc 2026 viral",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/SZPONCIC.SZPONT.Disco.Adamus.Nowosc.2026.viral.mp4",
-        "size": "38.0 MB"
-    },
-    {
-        "id": 24,
-        "title": "TIKI TIKI PLAKAL PLAKAL JA Z PLOCKA JESTEM DISCO ADAMUS SIGMABOY",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/TIKI.TIKI.PLAKAL.PLAKAL.JA.Z.PLOCKA.JESTEM.DISCO.ADAMUS.SIGMABOY.mp4",
-        "size": "21.9 MB"
-    },
-    {
-        "id": 25,
-        "title": "TRALALERO TRALA SigmaBoy brainrot discoadamus nowosc 2025",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/TRALALERO.TRALA.SigmaBoy.brainrot.discoadamus.nowosc.2025.mp4",
-        "size": "9.4 MB"
-    },
-    {
-        "id": 26,
-        "title": "TRALALERO TRALALA 2026 Disco Adamus viral viralvideo brainrot",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/TRALALERO.TRALALA.2026.Disco.Adamus.viral.viralvideo.brainrot.mp4",
-        "size": "86.2 MB"
-    },
-    {
-        "id": 27,
-        "title": "WOJANEK67 Disco Adamus wojanek hit viral",
-        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/WOJANEK67.Disco.Adamus.wojanek.hit.viral.mp4",
-        "size": "33.7 MB"
-    }
-];
+        let tracks = [];
 
         const player = document.getElementById('player');
         const nowPlaying = document.getElementById('now-playing');
         const playlistBox = document.getElementById('playlist-box');
+        const searchBox = document.getElementById('search-box');
 
-        function renderPlaylist() {
+        function renderPlaylist(list) {
             playlistBox.innerHTML = '';
-            tracks.forEach((track, index) => {
+            if (list.length === 0) {
+                playlistBox.innerHTML = '<div class="loading-msg">Brak wyników wyszukiwania 👁️👄👁️</div>';
+                return;
+            }
+
+            list.forEach((track) => {
                 const item = document.createElement('div');
-                item.className = 'track-item' + (index === 0 ? ' active' : '');
-                item.dataset.index = index;
+                item.className = 'track-item';
+                item.dataset.id = track.id;
+
+                if (player.src === track.url) {
+                    item.classList.add('active');
+                }
+
+                const thumbHtml = track.thumbnail
+                    ? `<img class="track-thumb" src="${track.thumbnail}" alt="" loading="lazy">`
+                    : `<div class="track-thumb placeholder">🎬</div>`;
+
                 item.innerHTML = `
-                    <span class="track-title">${track.id}. ${track.title}</span>
-                    <span class="track-size">${track.size}</span>
+                    ${thumbHtml}
+                    <div class="track-info">
+                        <span class="track-title">${track.id}. ${track.title}</span>
+                        <span class="track-size">${track.size}</span>
+                    </div>
                 `;
-                item.addEventListener('click', () => playTrack(index));
+                item.addEventListener('click', () => playTrackById(track.id));
                 playlistBox.appendChild(item);
             });
         }
 
-        function playTrack(index) {
-            const items = document.querySelectorAll('.track-item');
-            items.forEach(el => el.classList.remove('active'));
-            
-            if(items[index]) {
-                items[index].classList.add('active');
-                items[index].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
+        function playTrackById(id) {
+            const trackIndex = tracks.findIndex(t => t.id === id);
+            if (trackIndex === -1) return;
 
-            const track = tracks[index];
+            const track = tracks[trackIndex];
             player.src = track.url;
             nowPlaying.innerText = `${track.id}. ${track.title}`;
             player.play();
+
+            document.querySelectorAll('.track-item').forEach(el => {
+                el.classList.toggle('active', parseInt(el.dataset.id) === id);
+            });
         }
 
+        searchBox.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const filtered = tracks.filter(track => track.title.toLowerCase().includes(query));
+            renderPlaylist(filtered);
+        });
+
         player.addEventListener('ended', () => {
-            const currentActive = document.querySelector('.track-item.active');
-            let nextIndex = 0;
-            if (currentActive) {
-                nextIndex = parseInt(currentActive.dataset.index) + 1;
+            const currentUrl = player.src;
+            const currentIndex = tracks.findIndex(t => t.url === currentUrl);
+            let nextIndex = currentIndex + 1;
+
+            if (nextIndex >= tracks.length) {
+                nextIndex = 0;
             }
-            if (nextIndex < tracks.length) {
-                playTrack(nextIndex);
-            } else {
-                playTrack(0); // Zapętlenie od pierwszego
+
+            if (tracks[nextIndex]) {
+                playTrackById(tracks[nextIndex].id);
             }
         });
 
-        // Inicjalizacja
-        renderPlaylist();
-        if(tracks.length > 0) {
-            player.src = tracks[0].url;
-            nowPlaying.innerText = `${tracks[0].id}. ${tracks[0].title}`;
-        }
+        fetch('tracks.json?t=' + Date.now())
+            .then(res => {
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                return res.json();
+            })
+            .then(data => {
+                tracks = data;
+                renderPlaylist(tracks);
+                if (tracks.length > 0) {
+                    player.src = tracks[0].url;
+                    nowPlaying.innerText = `${tracks[0].id}. ${tracks[0].title}`;
+                }
+            })
+            .catch(err => {
+                playlistBox.innerHTML = `<div class="error-msg">❌ Nie udało się załadować playlisty (${err.message})</div>`;
+                console.error('Błąd ładowania tracks.json:', err);
+            });
     </script>
 </body>
 </html>
