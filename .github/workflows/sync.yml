@@ -29,14 +29,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python build_site.py
 
-      - name: Commit i Push zmian do repozytorium
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Synchronizacja przed commitem
-          git pull origin main --rebase
-          
-          # Dodanie pliku i commit tylko gdy są zmiany
-          git add index.html
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-sync playlist: update index.html" && git push origin main)
+      - name: Automatyczny commit i push
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Auto-sync playlist: update index.html"
+          file_pattern: "index.html"
