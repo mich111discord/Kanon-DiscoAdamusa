@@ -36,11 +36,10 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Synchronizacja z remote i zachowanie wygenerowanego index.html
-          git stash -- include-untracked
+          # 1. Pobierz najnowsze zmiany z GitHub
           git pull origin main --rebase
-          git stash pop || true
           
+          # 2. Dodaj wygenerowany plik i zrób commit
           git add index.html
           if ! git diff --staged --quiet; then
             git commit -m "Auto-sync playlist: update index.html"
