@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanon DiscoAdamusa 2026</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0b0e14;
+            color: #e6edf3;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        h1 {
+            color: #f1c40f;
+            margin: 0 0 5px 0;
+            font-size: 2.2rem;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 10px rgba(241, 196, 15, 0.2);
+        }
+        .subtitle {
+            color: #8b949e;
+            font-size: 0.95rem;
+        }
+        .container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        #player-box {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+        video {
+            width: 100%;
+            max-height: 500px;
+            border-radius: 8px;
+            background-color: #000;
+            outline: none;
+        }
+        #now-playing {
+            margin-top: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #f1c40f;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        #playlist-box {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 15px;
+            max-height: 450px;
+            overflow-y: auto;
+        }
+        .track-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #21262d;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .track-item:last-child {
+            border-bottom: none;
+        }
+        .track-item:hover {
+            background-color: #21262d;
+        }
+        .track-item.active {
+            background-color: #272e3b;
+            border-left: 4px solid #f1c40f;
+            color: #f1c40f;
+        }
+        .track-title {
+            font-size: 0.95rem;
+            word-break: break-word;
+            padding-right: 10px;
+        }
+        .track-size {
+            font-size: 0.8rem;
+            color: #8b949e;
+            white-space: nowrap;
+        }
+        /* Custom Scrollbar */
+        #playlist-box::-webkit-scrollbar {
+            width: 8px;
+        }
+        #playlist-box::-webkit-scrollbar-track {
+            background: #161b22;
+        }
+        #playlist-box::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>👑 Kanon DiscoAdamusa 2026 👑</h1>
+        <div class="subtitle">Oficjalne Archiwum Wideo 1080p</div>
+    </header>
+
+    <div class="container">
+        <div id="player-box">
+            <video id="player" controls autoplay preload="metadata">
+                <source src="" type="video/mp4">
+            </video>
+            <div id="now-playing">Wybierz utwór z listy...</div>
+        </div>
+
+        <div id="playlist-box" id="playlist">
+            <!-- Utwory ładowane z JS -->
+        </div>
+    </div>
+
+    <script>
+        const tracks = [
+    {
+        "id": 1,
+        "title": "67 I DO PIECA Disco Adamus viral tiktok tiktokvideo",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/67.I.DO.PIECA.Disco.Adamus.viral.tiktok.tiktokvideo.mp4",
+        "size": "64.2 MB"
+    },
+    {
+        "id": 2,
+        "title": "Banan34ketchup Disco Adamus Sigma Boy 67",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/Banan34ketchup.Disco.Adamus.Sigma.Boy.67.mp4",
+        "size": "18.4 MB"
+    },
+    {
+        "id": 3,
+        "title": "BINGO Disco Adamus viral",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/BINGO.Disco.Adamus.viral.mp4",
+        "size": "26.1 MB"
+    },
+    {
+        "id": 4,
+        "title": "BURGER67 Disco Adamus Nowosc burger",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/BURGER67.Disco.Adamus.Nowosc.burger.mp4",
+        "size": "53.6 MB"
+    },
+    {
+        "id": 5,
+        "title": "CHILBOMBA Disco Adamus viral",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/CHILBOMBA.Disco.Adamus.viral.mp4",
+        "size": "26.7 MB"
+    },
+    {
+        "id": 6,
+        "title": "CITY BOY Disco Adamus Nowosc 2026 city cityboy",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/CITY.BOY.Disco.Adamus.Nowosc.2026.city.cityboy.mp4",
+        "size": "62.1 MB"
+    },
+    {
+        "id": 7,
+        "title": "DISCO ADAMUS Bialystok Remix NOWOSC 2024",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/DISCO.ADAMUS.Bialystok.Remix.NOWOSC.2024.mp4",
+        "size": "23.0 MB"
+    },
+    {
+        "id": 8,
+        "title": "Disco Adamus break dance Poland headspin banka 2001",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/Disco.Adamus.break.dance.Poland.headspin.banka.2001.mp4",
+        "size": "3.2 MB"
+    },
+    {
+        "id": 9,
+        "title": "Disco Adamus Sigma Boy 2025 techno version",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/Disco.Adamus.Sigma.Boy.2025.techno.version.mp4",
+        "size": "71.2 MB"
+    },
+    {
+        "id": 10,
+        "title": "GOAT - Disco Adamus",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/GOAT.-.Disco.Adamus.mp4",
+        "size": "97.6 MB"
+    },
+    {
+        "id": 11,
+        "title": "KAJZERECZKI PAROWECZKI I CZTEROPAK Disco Adamus Nowosc",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/KAJZERECZKI.PAROWECZKI.I.CZTEROPAK.Disco.Adamus.Nowosc.mp4",
+        "size": "11.6 MB"
+    },
+    {
+        "id": 12,
+        "title": "KAUCJA 67 Disco Adamus Sigma Boy",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/KAUCJA.67.Disco.Adamus.Sigma.Boy.mp4",
+        "size": "16.4 MB"
+    },
+    {
+        "id": 13,
+        "title": "Krol bezrobocia Disco Adamus",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/Krol.bezrobocia.Disco.Adamus.mp4",
+        "size": "9.1 MB"
+    },
+    {
+        "id": 14,
+        "title": "LUBIE TORTY MALINOWE - Disco Adamus torta torty",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/LUBIE.TORTY.MALINOWE.-.Disco.Adamus.torta.torty.mp4",
+        "size": "17.4 MB"
+    },
+    {
+        "id": 15,
+        "title": "MANGO 67 MUSZTARDA Disco Adamus",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/MANGO.67.MUSZTARDA.Disco.Adamus.mp4",
+        "size": "57.5 MB"
+    },
+    {
+        "id": 16,
+        "title": "MANGO67 DiscoAdamusSigmaBoy Rastafarianin 2025 Viral Tiktok Nowosc 67 mango sigmaboy viral",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/MANGO67.DiscoAdamusSigmaBoy.Rastafarianin.2025.Viral.Tiktok.Nowosc.67.mango.sigmaboy.viral.mp4",
+        "size": "55.7 MB"
+    },
+    {
+        "id": 17,
+        "title": "MEGA TUFF Disco Adamus 2026 Nowosc",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/MEGA.TUFF.Disco.Adamus.2026.Nowosc.mp4",
+        "size": "66.9 MB"
+    },
+    {
+        "id": 18,
+        "title": "PADA DESZCZYK POPADUJE Disco Adamus",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/PADA.DESZCZYK.POPADUJE.Disco.Adamus.mp4",
+        "size": "19.3 MB"
+    },
+    {
+        "id": 19,
+        "title": "PHONK Mango Musztarda 67 i do pieca Disco Adamus SigmaBoy phonk phonkmusic",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/PHONK.Mango.Musztarda.67.i.do.pieca.Disco.Adamus.SigmaBoy.phonk.phonkmusic.mp4",
+        "size": "9.9 MB"
+    },
+    {
+        "id": 20,
+        "title": "Phonk Tiki tiki plakal plakal Disco Adamus tiktok viral",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/Phonk.Tiki.tiki.plakal.plakal.Disco.Adamus.tiktok.viral.mp4",
+        "size": "19.0 MB"
+    },
+    {
+        "id": 21,
+        "title": "SIGMABOY 2026 Disco Adamus polsat mustbethemusic",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/SIGMABOY.2026.Disco.Adamus.polsat.mustbethemusic.mp4",
+        "size": "51.3 MB"
+    },
+    {
+        "id": 22,
+        "title": "SPLYWAJ splyweczka Disco Adamus SIGMA BOY",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/SPLYWAJ.splyweczka.Disco.Adamus.SIGMA.BOY.mp4",
+        "size": "12.1 MB"
+    },
+    {
+        "id": 23,
+        "title": "SZPONCIC SZPONT Disco Adamus Nowosc 2026 viral",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/SZPONCIC.SZPONT.Disco.Adamus.Nowosc.2026.viral.mp4",
+        "size": "38.0 MB"
+    },
+    {
+        "id": 24,
+        "title": "TIKI TIKI PLAKAL PLAKAL JA Z PLOCKA JESTEM DISCO ADAMUS SIGMABOY",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/TIKI.TIKI.PLAKAL.PLAKAL.JA.Z.PLOCKA.JESTEM.DISCO.ADAMUS.SIGMABOY.mp4",
+        "size": "21.9 MB"
+    },
+    {
+        "id": 25,
+        "title": "TRALALERO TRALA SigmaBoy brainrot discoadamus nowosc 2025",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/TRALALERO.TRALA.SigmaBoy.brainrot.discoadamus.nowosc.2025.mp4",
+        "size": "9.4 MB"
+    },
+    {
+        "id": 26,
+        "title": "TRALALERO TRALALA 2026 Disco Adamus viral viralvideo brainrot",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/TRALALERO.TRALALA.2026.Disco.Adamus.viral.viralvideo.brainrot.mp4",
+        "size": "86.2 MB"
+    },
+    {
+        "id": 27,
+        "title": "WOJANEK67 Disco Adamus wojanek hit viral",
+        "url": "https://github.com/mich111discord/Kanon-DiscoAdamusa/releases/download/latest2026/WOJANEK67.Disco.Adamus.wojanek.hit.viral.mp4",
+        "size": "33.7 MB"
+    }
+];
+
+        const player = document.getElementById('player');
+        const nowPlaying = document.getElementById('now-playing');
+        const playlistBox = document.getElementById('playlist-box');
+
+        function renderPlaylist() {
+            playlistBox.innerHTML = '';
+            tracks.forEach((track, index) => {
+                const item = document.createElement('div');
+                item.className = 'track-item' + (index === 0 ? ' active' : '');
+                item.dataset.index = index;
+                item.innerHTML = `
+                    <span class="track-title">${track.id}. ${track.title}</span>
+                    <span class="track-size">${track.size}</span>
+                `;
+                item.addEventListener('click', () => playTrack(index));
+                playlistBox.appendChild(item);
+            });
+        }
+
+        function playTrack(index) {
+            const items = document.querySelectorAll('.track-item');
+            items.forEach(el => el.classList.remove('active'));
+            
+            if(items[index]) {
+                items[index].classList.add('active');
+                items[index].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
+            const track = tracks[index];
+            player.src = track.url;
+            nowPlaying.innerText = `${track.id}. ${track.title}`;
+            player.play();
+        }
+
+        player.addEventListener('ended', () => {
+            const currentActive = document.querySelector('.track-item.active');
+            let nextIndex = 0;
+            if (currentActive) {
+                nextIndex = parseInt(currentActive.dataset.index) + 1;
+            }
+            if (nextIndex < tracks.length) {
+                playTrack(nextIndex);
+            } else {
+                playTrack(0); // Zapętlenie od pierwszego
+            }
+        });
+
+        // Inicjalizacja
+        renderPlaylist();
+        if(tracks.length > 0) {
+            player.src = tracks[0].url;
+            nowPlaying.innerText = `${tracks[0].id}. ${tracks[0].title}`;
+        }
+    </script>
+</body>
+</html>
