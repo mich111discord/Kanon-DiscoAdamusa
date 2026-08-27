@@ -70,21 +70,26 @@ def find_thumbnail_url(title, thumb_assets):
     return None
 
 
-# ---------- Pobranie listy filmów z Release'a 'latest' ----------
+# ---------- Pobranie listy filmów z Release'a otagowanego dosłownie jako TAG ----------
+#
+# WAŻNE: pobieramy zawsze PO DOSŁOWNYM TAGU (/releases/tags/{TAG}), NIGDY przez alias
+# /releases/latest. Ten alias zwraca release, który GitHub aktualnie uznaje za
+# "najnowszy" (np. wg daty utworzenia albo flagi "make latest"), więc odkąd istnieje
+# drugi release (np. 'thumbnails'), alias mógłby zwrócić WŁAŚNIE JEGO zamiast
+# release'a z filmami - i wyzerować całą playlistę.
 
-if TAG == "latest":
-    videos_url = f"https://api.github.com/repos/{USER}/{REPO}/releases/latest"
-else:
-    videos_url = f"https://api.github.com/repos/{USER}/{REPO}/releases/tags/{TAG}"
-
-try:
-    videos_data = api_get(videos_url)
-except Exception as e:
-    print(f"Błąd podczas pobierania release'a: {e}")
-    videos_url = f"https://api.github.com/repos/{USER}/{REPO}/releases/latest"
-    videos_data = api_get(videos_url)
+videos_url = f"https://api.github.com/repos/{USER}/{REPO}/releases/tags/{TAG}"
+videos_data = api_get(videos_url)
 
 assets = videos_data.get('assets', [])
+
+mp4_count = sum(1 for a in assets if a['name'].lower().endswith('.mp4'))
+if mp4_count == 0:
+    raise RuntimeError(
+        f"Release '{TAG}' zwrócił {len(assets)} assetów, ale ŻADEN nie jest plikiem .mp4. "
+        f"Przerywam działanie, żeby NIE nadpisać istniejącego tracks.json pustą listą. "
+        f"Sprawdź, czy tag '{TAG}' na pewno wskazuje na release z filmami, a nie np. na 'thumbnails'."
+    )
 
 # ---------- Miniatury wgrane ręcznie do Release'a 'thumbnails' ----------
 
