@@ -7,9 +7,12 @@ on:
   release:
     types: [published, edited]
 
-# Zapobiega nakładaniu się na siebie kilku równoległych uruchomień (np. przy edycji Release)
+# Zapobiega nakładaniu się na siebie kilku równoległych uruchomień (np. przy edycji Release).
+# Grupa jest STAŁA (nie zależy od github.ref), bo event 'release' odpala się z różnym
+# ref (tag 'latest', tag 'thumbnails' itd.) - a wszystkie te uruchomienia i tak
+# pushują na ten sam branch 'main', więc muszą być serializowane wspólnie.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-sync-main
   cancel-in-progress: true
 
 permissions:
@@ -23,6 +26,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          # WAŻNE: event 'release' domyślnie checkout'uje commit WSKAZYWANY PRZEZ TAG,
+          # co ląduje w detached HEAD (nie na branchu). git push origin main wtedy
+          # zawodzi z błędem "src refspec main does not match any". Wymuszamy więc
+          # checkout brancha main niezależnie od tego, co odpaliło workflow.
+          ref: main
 
       - name: Konfiguracja Pythona
         uses: actions/setup-python@v5
