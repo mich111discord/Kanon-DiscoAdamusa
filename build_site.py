@@ -1,22 +1,13 @@
 import os
-import re
 import json
 import urllib.request
-import urllib.parse
 import urllib.error
 
 # === KONFIGURACJA GITHUBA ===
 USER = "mich111discord"
 REPO = "Kanon-DiscoAdamusa"
-TAG = "latest"                # tag Release'a z filmami .mp4
-THUMBNAILS_TAG = "thumbnails"  # tag Release'a, do którego trafiają miniatury
-
-# === MAPOWANIE: nazwa pliku .mp4 (dokładnie tak jak w Release) -> link YouTube ===
-# Dopisuj tu kolejne pozycje w miarę dodawania nowych filmów.
-# Klucz MUSI być identyczny z nazwą pliku widoczną w assets Release'a.
-MOVIE_THUMBNAILS = {
-    # "nazwa_pliku.mp4": "https://www.youtube.com/watch?v=XXXXXXXXXXX",
-}
+TAG = "latest"                  # tag Release'a z filmami .mp4
+THUMBNAILS_TAG = "thumbnails"    # tag Release'a, w którym ręcznie umieszczasz miniatury
 
 OUTPUT_JSON = "tracks.json"
 
@@ -25,8 +16,14 @@ api_headers = {'User-Agent': 'Mozilla/5.0', 'Accept': 'application/vnd.github+js
 if github_token:
     api_headers['Authorization'] = f'token {github_token}'
 
+# === MAPA ZAMIANY POLSKICH ZNAKÓW ===
+POLISH_CHAR_MAP = {
+    'ą': 'a', 'ć': 'c', 'ę': 'e', 'ł': 'l', 'ń': 'n',
+    'ó': 'o', 'ś': 's', 'ź': 'z', 'ż': 'z',
+    'Ą': 'A', 'Ć': 'C', 'Ę': 'E', 'Ł': 'L', 'Ń': 'N',
+    'Ó': 'O', 'Ś': 'S', 'Ź': 'Z', 'Ż': 'Z',
+}
 
-# ---------- Pomocnicze wywołania GitHub API ----------
 
 def api_get(url):
     req = urllib.request.Request(url, headers=api_headers)
@@ -34,85 +31,42 @@ def api_get(url):
         return json.loads(resp.read().decode())
 
 
-def api_post_json(url, payload):
-    req = urllib.request.Request(
-        url,
-        data=json.dumps(payload).encode('utf-8'),
-        headers={**api_headers, 'Content-Type': 'application/json'},
-        method='POST'
-    )
-    with urllib.request.urlopen(req) as resp:
-        return json.loads(resp.read().decode())
+def title_to_thumbnail_basename(title):
+    """
+    Zamienia tytuł utworu na nazwę bazową pliku miniatury (bez rozszerzenia),
+    zgodnie z konwencją: spacje -> kropki, polskie znaki -> odpowiedniki bez ogonków.
+    Np. "67 Ćma Remix" -> "67.Cma.Remix"
+    """
+    result = title.replace(' ', '.')
+    return ''.join(POLISH_CHAR_MAP.get(ch, ch) for ch in result)
 
 
-def get_or_create_thumbnails_release():
-    """Pobiera Release z tagiem 'thumbnails', a jeśli nie istnieje - tworzy go."""
+def get_thumbnails_release_assets():
+    """
+    Pobiera listę assetów z Release'a 'thumbnails' (wgrywanych ręcznie przez użytkownika).
+    Jeśli Release jeszcze nie istnieje, zwraca pusty słownik zamiast wywalać błąd.
+    """
     url = f"https://api.github.com/repos/{USER}/{REPO}/releases/tags/{THUMBNAILS_TAG}"
     try:
-        return api_get(url)
+        release = api_get(url)
     except urllib.error.HTTPError as e:
         if e.code == 404:
-            print(f"Release '{THUMBNAILS_TAG}' nie istnieje - tworzę nowy.")
-            create_url = f"https://api.github.com/repos/{USER}/{REPO}/releases"
-            return api_post_json(create_url, {
-                "tag_name": THUMBNAILS_TAG,
-                "name": "Miniatury (auto)",
-                "body": "Automatycznie generowane miniatury YouTube. Nie usuwaj tego Release'a.",
-                "draft": False,
-                "prerelease": False,
-            })
+            print(f"ℹ️  Release '{THUMBNAILS_TAG}' jeszcze nie istnieje - brak miniatur.")
+            return {}
         raise
+    return {asset['name']: asset['browser_download_url'] for asset in release.get('assets', [])}
 
 
-def upload_thumbnail_asset(release, filename, content_bytes):
-    """Wgrywa plik jako nowy asset do podanego Release'a i zwraca jego browser_download_url."""
-    upload_url = release['upload_url'].split('{')[0]
-    query = urllib.parse.urlencode({'name': filename})
-    req = urllib.request.Request(
-        f"{upload_url}?{query}",
-        data=content_bytes,
-        headers={**api_headers, 'Content-Type': 'image/jpeg'},
-        method='POST'
-    )
-    with urllib.request.urlopen(req) as resp:
-        result = json.loads(resp.read().decode())
-        return result['browser_download_url']
-
-
-# ---------- YouTube ----------
-
-def extract_youtube_id(link):
-    """Wyciąga ID filmu z różnych formatów linków YouTube."""
-    if not link:
-        return None
-    patterns = [
-        r"youtu\.be/([A-Za-z0-9_-]{11})",
-        r"youtube\.com/watch\?v=([A-Za-z0-9_-]{11})",
-        r"youtube\.com/embed/([A-Za-z0-9_-]{11})",
-        r"youtube\.com/shorts/([A-Za-z0-9_-]{11})",
-    ]
-    for pattern in patterns:
-        match = re.search(pattern, link)
-        if match:
-            return match.group(1)
-    return None
-
-
-def fetch_youtube_thumbnail_bytes(video_id):
-    """Próbuje pobrać najlepszą dostępną jakość miniatury z YouTube (w pamięci, bez zapisu na dysk)."""
-    candidates = ["maxresdefault", "hqdefault", "mqdefault", "default"]
-    for quality in candidates:
-        thumb_url = f"https://img.youtube.com/vi/{video_id}/{quality}.jpg"
-        try:
-            req_thumb = urllib.request.Request(thumb_url, headers={'User-Agent': 'Mozilla/5.0'})
-            with urllib.request.urlopen(req_thumb) as resp:
-                content = resp.read()
-                # YouTube zwraca małą "szarą" grafikę-placeholder gdy dana jakość nie istnieje
-                if len(content) < 1000:
-                    continue
-                return content
-        except Exception:
-            continue
+def find_thumbnail_url(title, thumb_assets):
+    """
+    Szuka assetu, którego nazwa (bez rozszerzenia) dokładnie pasuje do przetworzonego tytułu.
+    Rozszerzenie może być dowolne (.jpg, .png, .jpeg itd.).
+    """
+    base_name = title_to_thumbnail_basename(title)
+    for asset_name, asset_url in thumb_assets.items():
+        name_without_ext = os.path.splitext(asset_name)[0]
+        if name_without_ext == base_name:
+            return asset_url
     return None
 
 
@@ -132,13 +86,9 @@ except Exception as e:
 
 assets = videos_data.get('assets', [])
 
-# ---------- Release z miniaturami ----------
+# ---------- Miniatury wgrane ręcznie do Release'a 'thumbnails' ----------
 
-thumbnails_release = get_or_create_thumbnails_release()
-existing_thumb_assets = {
-    a['name']: a['browser_download_url']
-    for a in thumbnails_release.get('assets', [])
-}
+thumb_assets = get_thumbnails_release_assets()
 
 # ---------- Budowanie playlisty ----------
 
@@ -153,29 +103,10 @@ for idx, asset in enumerate(assets, start=1):
 
     title = raw_name.replace('.mp4', '').replace('.', ' ').replace('_', ' ')
 
-    thumbnail_url = None
-    youtube_link = MOVIE_THUMBNAILS.get(raw_name)
-    video_id = extract_youtube_id(youtube_link)
-
-    if video_id:
-        asset_filename = f"{video_id}.jpg"
-
-        if asset_filename in existing_thumb_assets:
-            # Miniatura już wgrana wcześniej - nie pobieramy i nie wgrywamy ponownie
-            thumbnail_url = existing_thumb_assets[asset_filename]
-        else:
-            content = fetch_youtube_thumbnail_bytes(video_id)
-            if content:
-                try:
-                    thumbnail_url = upload_thumbnail_asset(thumbnails_release, asset_filename, content)
-                    existing_thumb_assets[asset_filename] = thumbnail_url
-                    print(f"✅ Wgrano nową miniaturę: {asset_filename}")
-                except Exception as e:
-                    print(f"⚠️  Nie udało się wgrać miniatury dla {raw_name}: {e}")
-            else:
-                print(f"⚠️  Nie udało się pobrać miniatury z YouTube dla: {raw_name}")
-    else:
-        print(f"ℹ️  Brak wpisu w MOVIE_THUMBNAILS dla: {raw_name}")
+    thumbnail_url = find_thumbnail_url(title, thumb_assets)
+    if thumbnail_url is None:
+        expected = title_to_thumbnail_basename(title)
+        print(f"ℹ️  Brak miniatury dla: {raw_name} (oczekiwana nazwa bazowa: {expected}.*)")
 
     tracks_js.append({
         'id': idx,
