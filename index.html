@@ -4,214 +4,352 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kanon DiscoAdamusa 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg: #05070c;
+            --panel: #12161f;
+            --panel-2: #171c27;
+            --border: #262c3a;
+            --gold: #f5c518;
+            --gold-soft: rgba(245, 197, 24, 0.16);
+            --text: #eef1f7;
+            --text-dim: #8a91a3;
+            --green: #33d17a;
+            --discord: #5865F2;
+            --radius: 16px;
+        }
+
         * {
             box-sizing: border-box;
         }
+
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: #0b0e14;
-            color: #e6edf3;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background:
+                radial-gradient(circle at 15% 0%, rgba(245, 197, 24, 0.08), transparent 40%),
+                radial-gradient(circle at 85% 100%, rgba(88, 101, 242, 0.10), transparent 45%),
+                var(--bg);
+            background-attachment: fixed;
+            color: var(--text);
             margin: 0;
-            padding: 20px;
+            padding: 28px 16px 60px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
         }
+
         header {
             text-align: center;
-            margin-bottom: 20px;
-            position: relative;
+            margin-bottom: 24px;
             width: 100%;
-            max-width: 900px;
+            max-width: 880px;
         }
+
+        .crown {
+            font-size: 1.6rem;
+            filter: drop-shadow(0 0 12px rgba(245, 197, 24, 0.5));
+        }
+
         h1 {
-            color: #f1c40f;
-            margin: 0 0 5px 0;
-            font-size: 2.2rem;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 10px rgba(241, 196, 15, 0.4);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            color: var(--gold);
+            margin: 6px 0 4px;
+            font-size: clamp(1.6rem, 5vw, 2.4rem);
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 20px rgba(245, 197, 24, 0.35);
         }
+
         .subtitle {
-            color: #8b949e;
+            color: var(--text-dim);
             font-size: 0.95rem;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
+            letter-spacing: 0.3px;
         }
+
         .discord-btn {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background-color: #5865F2;
+            background: linear-gradient(135deg, var(--discord), #4752C4);
             color: #fff;
             text-decoration: none;
-            padding: 8px 16px;
-            border-radius: 6px;
+            padding: 9px 18px;
+            border-radius: 999px;
             font-weight: 600;
-            font-size: 0.9rem;
-            transition: background 0.2s, transform 0.1s;
+            font-size: 0.88rem;
+            box-shadow: 0 6px 18px rgba(88, 101, 242, 0.35);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
+
         .discord-btn:hover {
-            background-color: #4752C4;
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(88, 101, 242, 0.45);
         }
+
         .container {
             width: 100%;
-            max-width: 900px;
+            max-width: 880px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 18px;
         }
+
         #player-box {
-            background: linear-gradient(145deg, #1c180a, #161b22);
-            border: 2px solid #f1c40f;
-            border-radius: 12px;
-            padding: 18px;
-            box-shadow: 0 0 15px rgba(241, 196, 15, 0.25), 0 8px 24px rgba(0,0,0,0.6);
+            background: linear-gradient(160deg, #191509, var(--panel) 55%);
+            border: 1px solid rgba(245, 197, 24, 0.35);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow:
+                0 0 0 1px rgba(245, 197, 24, 0.05) inset,
+                0 20px 45px rgba(0, 0, 0, 0.45);
             position: relative;
         }
+
         video {
             width: 100%;
             max-height: 500px;
-            border-radius: 8px;
+            border-radius: 12px;
             background-color: #000;
             outline: none;
-            border: 1px solid rgba(241, 196, 15, 0.3);
+            border: 1px solid rgba(245, 197, 24, 0.25);
+            display: block;
         }
+
         .cdn-status {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            margin-top: 10px;
-            font-size: 0.82rem;
-            color: #2ecc71;
+            margin-top: 12px;
+            font-size: 0.75rem;
+            color: var(--green);
             font-weight: 600;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.6px;
             text-transform: uppercase;
         }
+
         .cdn-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #2ecc71;
+            width: 7px;
+            height: 7px;
+            background-color: var(--green);
             border-radius: 50%;
-            box-shadow: 0 0 8px #2ecc71;
-            animation: pulse 1.5s infinite;
+            box-shadow: 0 0 8px var(--green);
+            animation: pulse 1.6s infinite;
         }
+
         @keyframes pulse {
-            0% { opacity: 0.4; }
+            0%, 100% { opacity: 0.35; }
             50% { opacity: 1; }
-            100% { opacity: 0.4; }
         }
+
         #now-playing {
-            margin-top: 10px;
+            margin-top: 14px;
+            font-family: 'Poppins', sans-serif;
             font-size: 1.15rem;
             font-weight: 700;
-            color: #f1c40f;
+            color: var(--gold);
             text-align: center;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
         }
+
+        .search-wrap {
+            position: relative;
+        }
+
+        .search-wrap::before {
+            content: "🔍";
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.9rem;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
         #search-box {
             width: 100%;
-            padding: 12px 16px;
-            background-color: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            color: #e6edf3;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        #search-box:focus {
-            border-color: #f1c40f;
-        }
-        #playlist-box {
-            background-color: #161b22;
-            border: 1px solid #30363d;
+            padding: 13px 16px 13px 42px;
+            background-color: var(--panel);
+            border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 15px;
-            max-height: 450px;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        #search-box:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px var(--gold-soft);
+        }
+
+        .playlist-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 4px;
+        }
+
+        .playlist-header h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        #track-count {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            background: var(--panel-2);
+            padding: 3px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+        }
+
+        #playlist-box {
+            background-color: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 8px;
+            max-height: 460px;
             overflow-y: auto;
         }
+
         .track-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 10px 15px;
-            border-bottom: 1px solid #21262d;
-            border-radius: 6px;
+            gap: 13px;
+            padding: 10px 12px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: background 0.2s, color 0.2s;
+            transition: background 0.15s ease, transform 0.1s ease;
+            border: 1px solid transparent;
         }
-        .track-item:last-child {
-            border-bottom: none;
+
+        .track-item + .track-item {
+            margin-top: 3px;
         }
+
         .track-item:hover {
-            background-color: #21262d;
+            background-color: var(--panel-2);
         }
+
         .track-item.active {
-            background-color: #272e3b;
-            border-left: 4px solid #f1c40f;
-            color: #f1c40f;
+            background: linear-gradient(90deg, var(--gold-soft), transparent);
+            border-color: rgba(245, 197, 24, 0.35);
         }
+
+        .track-item.active .track-title {
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .track-num {
+            width: 22px;
+            flex-shrink: 0;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .track-item.active .track-num {
+            color: var(--gold);
+        }
+
         .track-thumb {
-            width: 64px;
-            height: 36px;
+            width: 68px;
+            height: 40px;
             object-fit: cover;
-            border-radius: 4px;
+            border-radius: 6px;
             flex-shrink: 0;
             background-color: #0b0e14;
-            border: 1px solid #30363d;
+            border: 1px solid var(--border);
         }
+
         .track-thumb.placeholder {
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.1rem;
+            color: var(--text-dim);
         }
+
         .track-info {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex: 1;
             min-width: 0;
+            gap: 10px;
         }
+
         .track-title {
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             word-break: break-word;
-            padding-right: 10px;
+            color: var(--text);
+            line-height: 1.3;
         }
+
         .track-size {
-            font-size: 0.8rem;
-            color: #8b949e;
+            font-size: 0.75rem;
+            color: var(--text-dim);
             white-space: nowrap;
+            flex-shrink: 0;
         }
+
         #playlist-box::-webkit-scrollbar {
             width: 8px;
         }
+
         #playlist-box::-webkit-scrollbar-track {
-            background: #161b22;
+            background: transparent;
         }
+
         #playlist-box::-webkit-scrollbar-thumb {
-            background: #30363d;
+            background: var(--border);
             border-radius: 4px;
         }
+
         .loading-msg, .error-msg {
             text-align: center;
-            padding: 20px;
-            color: #8b949e;
+            padding: 24px;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        .error-msg {
+            color: #ff6b6b;
+        }
+
+        footer {
+            margin-top: 24px;
+            color: var(--text-dim);
+            font-size: 0.78rem;
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>👑 Kanon DiscoAdamusa 2026 👑</h1>
-        <div class="subtitle">Oficjalne Archiwum Wideo 1080p</div>
+        <div class="crown">👑</div>
+        <h1>Kanon DiscoAdamusa 2026</h1>
+        <div class="subtitle">Oficjalne Archiwum Wideo · 1080p</div>
         <a href="https://discord.gg/ErbWv3kKCB" target="_blank" class="discord-btn">
-            <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M13.545 2.907a13.227 13.227 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.19 12.19 0 0 0-3.658 0 8.258 8.258 0 0 0-.412-.833.051.051 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.041.041 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032c.001.014.01.028.021.037a13.276 13.276 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019c.308-.42.582-.863.818-1.329a.05.05 0 0 0-.01-.059.051.051 0 0 0-.018-.011 8.875 8.875 0 0 1-1.248-.595.05.05 0 0 1-.02-.066.051.051 0 0 1 .015-.019c.084-.063.168-.129.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.052.052 0 0 1 .053.007c.08.066.164.132.248.195a.051.051 0 0 1-.004.085 8.254 8.254 0 0 1-1.249.594.05.05 0 0 0-.03.07.05.05 0 0 0 .02.018c.24.464.512.907.817 1.329a.05.05 0 0 0 .056.019 13.235 13.235 0 0 0 4.001-2.02.049.049 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.034.034 0 0 0-.02-.019zM5.318 10.366c-.786 0-1.432-.72-1.432-1.602 0-.883.633-1.602 1.432-1.602.798 0 1.444.726 1.432 1.602 0 .882-.634 1.602-1.432 1.602zm4.72 0c-.786 0-1.432-.72-1.432-1.602 0-.883.633-1.602 1.432-1.602.798 0 1.444.726 1.432 1.602 0 .882-.634 1.602-1.432 1.602z"/>
             </svg>
             Dołącz do Discorda
@@ -230,11 +368,20 @@
             </div>
         </div>
 
-        <input type="text" id="search-box" placeholder="🔍 Szukaj hitu DiscoAdamusa (np. 67, PHONK, BANAN)...">
+        <div class="search-wrap">
+            <input type="text" id="search-box" placeholder="Szukaj hitu DiscoAdamusa (np. 67, PHONK, BANAN)...">
+        </div>
+
+        <div class="playlist-header">
+            <h2>Playlista</h2>
+            <span id="track-count"></span>
+        </div>
 
         <div id="playlist-box">
             <div class="loading-msg">Ładowanie playlisty...</div>
         </div>
+
+        <footer>Kanon DiscoAdamusa · hostowane na GitHub Releases</footer>
     </div>
 
     <script>
@@ -244,6 +391,7 @@
         const nowPlaying = document.getElementById('now-playing');
         const playlistBox = document.getElementById('playlist-box');
         const searchBox = document.getElementById('search-box');
+        const trackCount = document.getElementById('track-count');
 
         function renderPlaylist(list) {
             playlistBox.innerHTML = '';
@@ -257,7 +405,7 @@
                 item.className = 'track-item';
                 item.dataset.id = track.id;
 
-                if (player.src === track.url) {
+                if (String(track.id) === String(getCurrentIdFromUrl())) {
                     item.classList.add('active');
                 }
 
@@ -266,28 +414,44 @@
                     : `<div class="track-thumb placeholder">🎬</div>`;
 
                 item.innerHTML = `
+                    <span class="track-num">${track.id}</span>
                     ${thumbHtml}
                     <div class="track-info">
-                        <span class="track-title">${track.id}. ${track.title}</span>
+                        <span class="track-title">${track.title}</span>
                         <span class="track-size">${track.size}</span>
                     </div>
                 `;
-                item.addEventListener('click', () => playTrackById(track.id));
+                item.addEventListener('click', () => playTrackById(track.id, true));
                 playlistBox.appendChild(item);
             });
         }
 
-        function playTrackById(id) {
-            const trackIndex = tracks.findIndex(t => t.id === id);
+        function getCurrentIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id');
+        }
+
+        function setIdInUrl(id) {
+            const url = new URL(window.location);
+            url.searchParams.set('id', id);
+            history.replaceState({}, '', url);
+        }
+
+        function playTrackById(id, updateUrl) {
+            const trackIndex = tracks.findIndex(t => String(t.id) === String(id));
             if (trackIndex === -1) return;
 
             const track = tracks[trackIndex];
             player.src = track.url;
             nowPlaying.innerText = `${track.id}. ${track.title}`;
-            player.play();
+            player.play().catch(() => {});
+
+            if (updateUrl) {
+                setIdInUrl(track.id);
+            }
 
             document.querySelectorAll('.track-item').forEach(el => {
-                el.classList.toggle('active', parseInt(el.dataset.id) === id);
+                el.classList.toggle('active', String(el.dataset.id) === String(track.id));
             });
         }
 
@@ -307,7 +471,7 @@
             }
 
             if (tracks[nextIndex]) {
-                playTrackById(tracks[nextIndex].id);
+                playTrackById(tracks[nextIndex].id, true);
             }
         });
 
@@ -318,10 +482,19 @@
             })
             .then(data => {
                 tracks = data;
+                trackCount.innerText = `${tracks.length} ${tracks.length === 1 ? 'utwór' : 'utworów'}`;
                 renderPlaylist(tracks);
-                if (tracks.length > 0) {
-                    player.src = tracks[0].url;
-                    nowPlaying.innerText = `${tracks[0].id}. ${tracks[0].title}`;
+
+                if (tracks.length === 0) return;
+
+                // Obsługa ?id=X w adresie URL - jeśli podano prawidłowe ID, odtwórz je od razu.
+                const requestedId = getCurrentIdFromUrl();
+                const requestedTrack = tracks.find(t => String(t.id) === String(requestedId));
+
+                if (requestedTrack) {
+                    playTrackById(requestedTrack.id, false);
+                } else {
+                    playTrackById(tracks[0].id, false);
                 }
             })
             .catch(err => {
