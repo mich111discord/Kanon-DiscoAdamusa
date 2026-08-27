@@ -6,7 +6,7 @@ import urllib.error
 # === KONFIGURACJA GITHUBA ===
 USER = "mich111discord"
 REPO = "Kanon-DiscoAdamusa"
-TAG = "latest"                  # tag Release'a z filmami .mp4
+TAG = "latest2026"                  # tag Release'a z filmami .mp4
 THUMBNAILS_TAG = "thumbnails"    # tag Release'a, w którym ręcznie umieszczasz miniatury
 
 OUTPUT_JSON = "tracks.json"
