@@ -6,7 +6,7 @@
     <title>Kanon DiscoAdamusa 2026</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=YouTube+Sans:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #0f0f0f;
@@ -35,7 +35,6 @@
             flex-direction: column;
         }
 
-        /* Top Bar / Header */
         header {
             background-color: #0f0f0f;
             border-bottom: 1px solid var(--border);
@@ -84,7 +83,6 @@
             opacity: 0.9;
         }
 
-        /* Layout YT-Style Grid */
         .yt-grid {
             max-width: 1750px;
             margin: 0 auto;
@@ -101,7 +99,6 @@
             }
         }
 
-        /* Player Main Area */
         .player-container {
             display: flex;
             flex-direction: column;
@@ -116,6 +113,7 @@
             overflow: hidden;
             box-shadow: 0 4px 20px rgba(0,0,0,0.6);
             aspect-ratio: 16 / 9;
+            cursor: pointer;
         }
 
         video {
@@ -125,32 +123,39 @@
             display: block;
         }
 
-        /* Custom Player Overlay Controls */
+        /* Udoskonalony nakładany interfejs odtwarzacza */
         .player-controls {
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(transparent, rgba(0,0,0,0.85));
-            padding: 10px 16px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            padding: 12px 16px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
             opacity: 1;
-            transition: opacity 0.3s;
+            transition: opacity 0.3s ease;
+            user-select: none;
+        }
+
+        .video-wrapper.hide-controls .player-controls {
+            opacity: 0;
+            pointer-events: none;
         }
 
         .progress-bar-container {
             width: 100%;
-            height: 5px;
-            background: rgba(255,255,255,0.2);
+            height: 6px;
+            background: rgba(255,255,255,0.25);
             cursor: pointer;
             position: relative;
             border-radius: 3px;
+            transition: height 0.15s ease;
         }
 
         .progress-bar-container:hover {
-            height: 8px;
+            height: 10px;
         }
 
         .progress-bar {
@@ -170,7 +175,7 @@
         .controls-left, .controls-right {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
         }
 
         .ctrl-btn {
@@ -184,11 +189,47 @@
             justify-content: center;
             padding: 4px;
             border-radius: 50%;
-            transition: background 0.2s;
+            transition: background 0.2s, transform 0.1s;
         }
 
         .ctrl-btn:hover {
             background: rgba(255,255,255,0.15);
+        }
+
+        .ctrl-btn:active {
+            transform: scale(0.9);
+        }
+
+        /* Kontrola głośności */
+        .volume-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .volume-slider {
+            width: 0px;
+            opacity: 0;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.3);
+            height: 4px;
+            border-radius: 2px;
+            outline: none;
+            transition: width 0.2s ease, opacity 0.2s ease;
+            cursor: pointer;
+        }
+
+        .volume-group:hover .volume-slider {
+            width: 60px;
+            opacity: 1;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #fff;
         }
 
         .time-display {
@@ -196,7 +237,6 @@
             color: #ddd;
         }
 
-        /* Video Info Header */
         #now-playing {
             font-size: 1.25rem;
             font-weight: 700;
@@ -212,6 +252,22 @@
             padding-bottom: 12px;
             color: var(--text-dim);
             font-size: 0.85rem;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .meta-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .views-count {
+            font-weight: 500;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .cdn-badge {
@@ -232,7 +288,6 @@
             box-shadow: 0 0 6px #2ba640;
         }
 
-        /* Sidebar Playlist Area */
         .sidebar {
             display: flex;
             flex-direction: column;
@@ -304,7 +359,6 @@
             gap: 4px;
         }
 
-        /* YT Item Style */
         .track-item {
             display: flex;
             gap: 10px;
@@ -375,7 +429,6 @@
             color: var(--text-dim);
         }
 
-        /* Custom Scrollbar */
         #playlist-box::-webkit-scrollbar {
             width: 6px;
         }
@@ -414,22 +467,24 @@
     </header>
 
     <main class="yt-grid">
-        <!-- Player Container -->
         <section class="player-container">
-            <div class="video-wrapper">
+            <div class="video-wrapper" id="video-wrapper">
                 <video id="player" preload="metadata"></video>
-                <!-- Stylizowane kontrolki -->
                 <div class="player-controls">
                     <div class="progress-bar-container" id="progress-container">
                         <div class="progress-bar" id="progress-bar"></div>
                     </div>
                     <div class="controls-row">
                         <div class="controls-left">
-                            <button class="ctrl-btn" id="play-btn">▶</button>
+                            <button class="ctrl-btn" id="play-btn" title="Odtwórz / Pauza (Spacja)">▶</button>
+                            <div class="volume-group">
+                                <button class="ctrl-btn" id="mute-btn" title="Wycisz">🔊</button>
+                                <input type="range" id="volume-slider" class="volume-slider" min="0" max="1" step="0.05" value="1">
+                            </div>
                             <span class="time-display"><span id="curr-time">0:00</span> / <span id="dur-time">0:00</span></span>
                         </div>
                         <div class="controls-right">
-                            <button class="ctrl-btn" id="fs-btn">⛶</button>
+                            <button class="ctrl-btn" id="fs-btn" title="Pełny ekran">⛶</button>
                         </div>
                     </div>
                 </div>
@@ -437,6 +492,9 @@
 
             <h1 id="now-playing">Wybierz utwór z listy...</h1>
             <div class="meta-bar">
+                <div class="meta-left">
+                    <span class="views-count" id="views-count">👁️ -- odtworzeń</span>
+                </div>
                 <div class="cdn-badge">
                     <div class="cdn-dot"></div>
                     <span>GitHub Releases CDN · 1080p</span>
@@ -444,7 +502,6 @@
             </div>
         </section>
 
-        <!-- Sidebar Playlist -->
         <aside class="sidebar">
             <div class="search-wrap">
                 <span class="search-icon">🔍</span>
@@ -468,16 +525,24 @@
     </footer>
 
     <script>
-        let tracks = [];
+        // UWAGA: Ustaw tutaj swoją nazwę użytkownika oraz nazwę repozytorium GitHub
+        const GITHUB_REPO_OWNER = "TwojaNazwaUzytkownika";
+        const GITHUB_REPO_NAME = "NazwaRepozytorium";
 
+        let tracks = [];
+        let githubDownloadsMap = {};
+
+        const videoWrapper = document.getElementById('video-wrapper');
         const player = document.getElementById('player');
         const nowPlaying = document.getElementById('now-playing');
         const playlistBox = document.getElementById('playlist-box');
         const searchBox = document.getElementById('search-box');
         const trackCount = document.getElementById('track-count');
+        const viewsCount = document.getElementById('views-count');
 
-        // Elements do własnego audio/wideo odtwarzacza
         const playBtn = document.getElementById('play-btn');
+        const muteBtn = document.getElementById('mute-btn');
+        const volumeSlider = document.getElementById('volume-slider');
         const progressContainer = document.getElementById('progress-container');
         const progressBar = document.getElementById('progress-bar');
         const currTimeEl = document.getElementById('curr-time');
@@ -491,8 +556,37 @@
             return `${m}:${s < 10 ? '0' : ''}${s}`;
         }
 
-        /* Odtwarzacz Custom JS */
-        playBtn.addEventListener('click', () => {
+        function extractFilename(url) {
+            try {
+                const parsedUrl = new URL(url);
+                const parts = parsedUrl.pathname.split('/');
+                return parts[parts.length - 1];
+            } catch (e) {
+                return '';
+            }
+        }
+
+        // Pobieranie liczby pobrań z GitHub API
+        async function fetchGitHubDownloads() {
+            try {
+                const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/releases`);
+                if (!res.ok) return;
+                const releases = await res.json();
+                
+                releases.forEach(release => {
+                    if (release.assets && Array.isArray(release.assets)) {
+                        release.assets.forEach(asset => {
+                            githubDownloadsMap[asset.name] = asset.download_count;
+                        });
+                    }
+                });
+            } catch (e) {
+                console.warn("Nie udało się pobrać danych z GitHub API:", e);
+            }
+        }
+
+        // Obsługa sterowania wideo
+        function togglePlay() {
             if (player.paused) {
                 player.play();
                 playBtn.innerText = '⏸';
@@ -500,6 +594,32 @@
                 player.pause();
                 playBtn.innerText = '▶';
             }
+        }
+
+        playBtn.addEventListener('click', togglePlay);
+
+        videoWrapper.addEventListener('click', (e) => {
+            if (e.target === player) {
+                togglePlay();
+            }
+        });
+
+        videoWrapper.addEventListener('dblclick', (e) => {
+            if (e.target === player) {
+                toggleFullscreen();
+            }
+        });
+
+        // Ukrywanie paska po bezczynności myszy
+        let controlsTimeout;
+        videoWrapper.addEventListener('mousemove', () => {
+            videoWrapper.classList.remove('hide-controls');
+            clearTimeout(controlsTimeout);
+            controlsTimeout = setTimeout(() => {
+                if (!player.paused) {
+                    videoWrapper.classList.add('hide-controls');
+                }
+            }, 2500);
         });
 
         player.addEventListener('timeupdate', () => {
@@ -515,15 +635,54 @@
             player.currentTime = pos * player.duration;
         });
 
-        fsBtn.addEventListener('click', () => {
+        // Kontrola dźwięku
+        volumeSlider.addEventListener('input', (e) => {
+            player.volume = e.target.value;
+            player.muted = player.volume === 0;
+            updateMuteIcon();
+        });
+
+        muteBtn.addEventListener('click', () => {
+            player.muted = !player.muted;
+            if (player.muted) {
+                volumeSlider.value = 0;
+            } else {
+                volumeSlider.value = player.volume || 1;
+            }
+            updateMuteIcon();
+        });
+
+        function updateMuteIcon() {
+            if (player.muted || player.volume === 0) {
+                muteBtn.innerText = '🔇';
+            } else if (player.volume < 0.5) {
+                muteBtn.innerText = '🔉';
+            } else {
+                muteBtn.innerText = '🔊';
+            }
+        }
+
+        function toggleFullscreen() {
             if (!document.fullscreenElement) {
-                player.requestFullscreen();
+                videoWrapper.requestFullscreen();
             } else {
                 document.exitFullscreen();
             }
+        }
+
+        fsBtn.addEventListener('click', toggleFullscreen);
+
+        // Skróty klawiszowe
+        document.addEventListener('keydown', (e) => {
+            if (document.activeElement.tagName === 'INPUT') return;
+            if (e.code === 'Space') {
+                e.preventDefault();
+                togglePlay();
+            } else if (e.code === 'KeyF') {
+                toggleFullscreen();
+            }
         });
 
-        /* Playlista Logic */
         function renderPlaylist(list) {
             playlistBox.innerHTML = '';
             if (list.length === 0) {
@@ -540,6 +699,10 @@
                     item.classList.add('active');
                 }
 
+                const filename = extractFilename(track.url);
+                const downloads = githubDownloadsMap[filename] !== undefined ? githubDownloadsMap[filename] : null;
+                const viewsText = downloads !== null ? ` · 👁️ ${downloads}` : '';
+
                 const thumbHtml = track.thumbnail
                     ? `<img class="track-thumb" src="${track.thumbnail}" alt="" loading="lazy">`
                     : `<div class="track-thumb placeholder">🎵</div>`;
@@ -550,7 +713,7 @@
                     </div>
                     <div class="track-info">
                         <div class="track-title">${track.title}</div>
-                        <div class="track-meta">#${track.id} · ${track.size || 'HD'}</div>
+                        <div class="track-meta">#${track.id} · ${track.size || 'HD'}${viewsText}</div>
                     </div>
                 `;
                 item.addEventListener('click', () => playTrackById(track.id, true));
@@ -577,6 +740,14 @@
             player.src = track.url;
             nowPlaying.innerText = `${track.title}`;
             
+            const filename = extractFilename(track.url);
+            const downloads = githubDownloadsMap[filename];
+            if (downloads !== undefined) {
+                viewsCount.innerText = `👁️ ${downloads.toLocaleString()} odtworzeń`;
+            } else {
+                viewsCount.innerText = `👁️ -- odtworzeń`;
+            }
+
             player.play().then(() => {
                 playBtn.innerText = '⏸';
             }).catch(() => {
@@ -612,13 +783,15 @@
             }
         });
 
-        fetch('tracks.json?t=' + Date.now())
-            .then(res => {
+        // Inicjalizacja danych
+        async function init() {
+            await fetchGitHubDownloads();
+
+            try {
+                const res = await fetch('tracks.json?t=' + Date.now());
                 if (!res.ok) throw new Error('HTTP ' + res.status);
-                return res.json();
-            })
-            .then(data => {
-                tracks = data;
+                tracks = await res.json();
+                
                 trackCount.innerText = `${tracks.length} utworów`;
                 renderPlaylist(tracks);
 
@@ -632,11 +805,13 @@
                 } else {
                     playTrackById(tracks[0].id, false);
                 }
-            })
-            .catch(err => {
+            } catch (err) {
                 playlistBox.innerHTML = `<div class="error-msg">❌ Błąd ładowania playlisty (${err.message})</div>`;
                 console.error(err);
-            });
+            }
+        }
+
+        init();
     </script>
 </body>
 </html>
