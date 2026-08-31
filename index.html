@@ -6,383 +6,466 @@
     <title>Kanon DiscoAdamusa 2026</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=YouTube+Sans:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #05070c;
-            --panel: #12161f;
-            --panel-2: #171c27;
-            --border: #262c3a;
-            --gold: #f5c518;
-            --gold-soft: rgba(245, 197, 24, 0.16);
-            --text: #eef1f7;
-            --text-dim: #8a91a3;
-            --green: #33d17a;
+            --bg: #0f0f0f;
+            --panel: #181818;
+            --panel-hover: #272727;
+            --border: #222222;
+            --red: #ff0000;
+            --text: #f1f1f1;
+            --text-dim: #aaa;
             --discord: #5865F2;
-            --radius: 16px;
+            --radius: 12px;
         }
 
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: 'Inter', 'Segoe UI', sans-serif;
-            background:
-                radial-gradient(circle at 15% 0%, rgba(245, 197, 24, 0.08), transparent 40%),
-                radial-gradient(circle at 85% 100%, rgba(88, 101, 242, 0.10), transparent 45%),
-                var(--bg);
-            background-attachment: fixed;
+            font-family: 'Roboto', 'Segoe UI', sans-serif;
+            background-color: var(--bg);
             color: var(--text);
-            margin: 0;
-            padding: 28px 16px 60px;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
         }
 
+        /* Top Bar / Header */
         header {
-            text-align: center;
-            margin-bottom: 24px;
-            width: 100%;
-            max-width: 880px;
+            background-color: #0f0f0f;
+            border-bottom: 1px solid var(--border);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .crown {
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .brand-logo {
             font-size: 1.6rem;
-            filter: drop-shadow(0 0 12px rgba(245, 197, 24, 0.5));
         }
 
-        h1 {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 800;
-            color: var(--gold);
-            margin: 6px 0 4px;
-            font-size: clamp(1.6rem, 5vw, 2.4rem);
-            letter-spacing: 0.5px;
-            text-shadow: 0 2px 20px rgba(245, 197, 24, 0.35);
-        }
-
-        .subtitle {
-            color: var(--text-dim);
-            font-size: 0.95rem;
-            margin-bottom: 18px;
-            letter-spacing: 0.3px;
+        .brand-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--text);
+            letter-spacing: -0.5px;
         }
 
         .discord-btn {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: linear-gradient(135deg, var(--discord), #4752C4);
+            background-color: var(--discord);
             color: #fff;
             text-decoration: none;
-            padding: 9px 18px;
-            border-radius: 999px;
-            font-weight: 600;
-            font-size: 0.88rem;
-            box-shadow: 0 6px 18px rgba(88, 101, 242, 0.35);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            padding: 8px 16px;
+            border-radius: 18px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: opacity 0.2s;
         }
 
         .discord-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 24px rgba(88, 101, 242, 0.45);
+            opacity: 0.9;
         }
 
-        .container {
+        /* Layout YT-Style Grid */
+        .yt-grid {
+            max-width: 1750px;
+            margin: 0 auto;
             width: 100%;
-            max-width: 880px;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        @media (min-width: 1024px) {
+            .yt-grid {
+                grid-template-columns: 1fr 400px;
+            }
+        }
+
+        /* Player Main Area */
+        .player-container {
             display: flex;
             flex-direction: column;
-            gap: 18px;
+            gap: 12px;
         }
 
-        #player-box {
-            background: linear-gradient(160deg, #191509, var(--panel) 55%);
-            border: 1px solid rgba(245, 197, 24, 0.35);
-            border-radius: var(--radius);
-            padding: 20px;
-            box-shadow:
-                0 0 0 1px rgba(245, 197, 24, 0.05) inset,
-                0 20px 45px rgba(0, 0, 0, 0.45);
+        .video-wrapper {
             position: relative;
+            width: 100%;
+            background-color: #000;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+            aspect-ratio: 16 / 9;
         }
 
         video {
             width: 100%;
-            max-height: 500px;
-            border-radius: 12px;
-            background-color: #000;
-            outline: none;
-            border: 1px solid rgba(245, 197, 24, 0.25);
+            height: 100%;
+            object-fit: contain;
             display: block;
         }
 
-        .cdn-status {
+        /* Custom Player Overlay Controls */
+        .player-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.85));
+            padding: 10px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            opacity: 1;
+            transition: opacity 0.3s;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 5px;
+            background: rgba(255,255,255,0.2);
+            cursor: pointer;
+            position: relative;
+            border-radius: 3px;
+        }
+
+        .progress-bar-container:hover {
+            height: 8px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--red);
+            width: 0%;
+            border-radius: 3px;
+            position: relative;
+        }
+
+        .controls-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .controls-left, .controls-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .ctrl-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1.1rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            margin-top: 12px;
-            font-size: 0.75rem;
-            color: var(--green);
-            font-weight: 600;
-            letter-spacing: 0.6px;
-            text-transform: uppercase;
+            padding: 4px;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .ctrl-btn:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        .time-display {
+            font-size: 0.8rem;
+            color: #ddd;
+        }
+
+        /* Video Info Header */
+        #now-playing {
+            font-size: 1.25rem;
+            font-weight: 700;
+            line-height: 1.3;
+            color: var(--text);
+        }
+
+        .meta-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+
+        .cdn-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--panel);
+            padding: 6px 12px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
         }
 
         .cdn-dot {
-            width: 7px;
-            height: 7px;
-            background-color: var(--green);
+            width: 8px;
+            height: 8px;
+            background-color: #2ba640;
             border-radius: 50%;
-            box-shadow: 0 0 8px var(--green);
-            animation: pulse 1.6s infinite;
+            box-shadow: 0 0 6px #2ba640;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 0.35; }
-            50% { opacity: 1; }
-        }
-
-        #now-playing {
-            margin-top: 14px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: var(--gold);
-            text-align: center;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        /* Sidebar Playlist Area */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .search-wrap {
             position: relative;
         }
 
-        .search-wrap::before {
-            content: "🔍";
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 0.9rem;
-            opacity: 0.6;
-            pointer-events: none;
-        }
-
         #search-box {
             width: 100%;
-            padding: 13px 16px 13px 42px;
+            padding: 10px 16px 10px 40px;
             background-color: var(--panel);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 20px;
             color: var(--text);
-            font-family: 'Inter', sans-serif;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         #search-box:focus {
-            border-color: var(--gold);
-            box-shadow: 0 0 0 3px var(--gold-soft);
+            border-color: #3ea6ff;
         }
 
-        .playlist-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 4px;
-        }
-
-        .playlist-header h2 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.95rem;
-            font-weight: 600;
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
             color: var(--text-dim);
-            margin: 0;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
+            font-size: 0.9rem;
         }
 
-        #track-count {
-            font-size: 0.8rem;
-            color: var(--text-dim);
-            background: var(--panel-2);
-            padding: 3px 10px;
-            border-radius: 999px;
-            border: 1px solid var(--border);
-        }
-
-        #playlist-box {
+        .playlist-card {
             background-color: var(--panel);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 8px;
-            max-height: 460px;
-            overflow-y: auto;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 650px;
         }
 
-        .track-item {
+        .playlist-header {
+            padding: 12px 16px;
+            background-color: rgba(255,255,255,0.03);
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
-            gap: 13px;
-            padding: 10px 12px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background 0.15s ease, transform 0.1s ease;
-            border: 1px solid transparent;
+            justify-content: space-between;
         }
 
-        .track-item + .track-item {
-            margin-top: 3px;
+        .playlist-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        #track-count {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        #playlist-box {
+            overflow-y: auto;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        /* YT Item Style */
+        .track-item {
+            display: flex;
+            gap: 10px;
+            padding: 6px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.15s ease;
         }
 
         .track-item:hover {
-            background-color: var(--panel-2);
+            background-color: var(--panel-hover);
         }
 
         .track-item.active {
-            background: linear-gradient(90deg, var(--gold-soft), transparent);
-            border-color: rgba(245, 197, 24, 0.35);
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
-        .track-item.active .track-title {
-            color: var(--gold);
-            font-weight: 600;
-        }
-
-        .track-num {
-            width: 22px;
+        .track-thumb-wrap {
+            position: relative;
+            width: 100px;
+            height: 56px;
             flex-shrink: 0;
-            text-align: center;
-            font-size: 0.8rem;
-            color: var(--text-dim);
-            font-variant-numeric: tabular-nums;
-        }
-
-        .track-item.active .track-num {
-            color: var(--gold);
+            border-radius: 6px;
+            overflow: hidden;
+            background-color: #000;
         }
 
         .track-thumb {
-            width: 68px;
-            height: 40px;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
-            border-radius: 6px;
-            flex-shrink: 0;
-            background-color: #0b0e14;
-            border: 1px solid var(--border);
         }
 
         .track-thumb.placeholder {
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
-            color: var(--text-dim);
+            font-size: 1.2rem;
+            background: #202020;
         }
 
         .track-info {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex: 1;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4px;
             min-width: 0;
-            gap: 10px;
         }
 
         .track-title {
-            font-size: 0.92rem;
-            word-break: break-word;
+            font-size: 0.85rem;
+            font-weight: 500;
             color: var(--text);
-            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.2;
         }
 
-        .track-size {
+        .track-item.active .track-title {
+            color: #3ea6ff;
+        }
+
+        .track-meta {
             font-size: 0.75rem;
             color: var(--text-dim);
-            white-space: nowrap;
-            flex-shrink: 0;
         }
 
+        /* Custom Scrollbar */
         #playlist-box::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
-
-        #playlist-box::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
         #playlist-box::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 4px;
+            background: #555;
+            border-radius: 3px;
         }
 
         .loading-msg, .error-msg {
             text-align: center;
-            padding: 24px;
+            padding: 20px;
+            font-size: 0.85rem;
             color: var(--text-dim);
-            font-size: 0.9rem;
-        }
-
-        .error-msg {
-            color: #ff6b6b;
         }
 
         footer {
-            margin-top: 24px;
-            color: var(--text-dim);
-            font-size: 0.78rem;
+            margin-top: auto;
+            padding: 16px;
             text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            border-top: 1px solid var(--border);
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="crown">👑</div>
-        <h1>Kanon DiscoAdamusa 2026</h1>
-        <div class="subtitle">Oficjalne Archiwum Wideo · 1080p</div>
+        <a href="#" class="brand">
+            <span class="brand-logo">👑</span>
+            <span class="brand-title">Kanon DiscoAdamusa</span>
+        </a>
         <a href="https://discord.gg/ErbWv3kKCB" target="_blank" class="discord-btn">
-            <svg width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M13.545 2.907a13.227 13.227 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.19 12.19 0 0 0-3.658 0 8.258 8.258 0 0 0-.412-.833.051.051 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.041.041 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032c.001.014.01.028.021.037a13.276 13.276 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019c.308-.42.582-.863.818-1.329a.05.05 0 0 0-.01-.059.051.051 0 0 0-.018-.011 8.875 8.875 0 0 1-1.248-.595.05.05 0 0 1-.02-.066.051.051 0 0 1 .015-.019c.084-.063.168-.129.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.052.052 0 0 1 .053.007c.08.066.164.132.248.195a.051.051 0 0 1-.004.085 8.254 8.254 0 0 1-1.249.594.05.05 0 0 0-.03.07.05.05 0 0 0 .02.018c.24.464.512.907.817 1.329a.05.05 0 0 0 .056.019 13.235 13.235 0 0 0 4.001-2.02.049.049 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.034.034 0 0 0-.02-.019zM5.318 10.366c-.786 0-1.432-.72-1.432-1.602 0-.883.633-1.602 1.432-1.602.798 0 1.444.726 1.432 1.602 0 .882-.634 1.602-1.432 1.602zm4.72 0c-.786 0-1.432-.72-1.432-1.602 0-.883.633-1.602 1.432-1.602.798 0 1.444.726 1.432 1.602 0 .882-.634 1.602-1.432 1.602z"/>
-            </svg>
             Dołącz do Discorda
         </a>
     </header>
 
-    <div class="container">
-        <div id="player-box">
-            <video id="player" controls autoplay preload="metadata">
-                <source src="" type="video/mp4">
-            </video>
-            <div id="now-playing">Wybierz utwór z listy...</div>
-            <div class="cdn-status">
-                <div class="cdn-dot"></div>
-                <span>Łączenie z CDN: GitHub Releases 1080p</span>
+    <main class="yt-grid">
+        <!-- Player Container -->
+        <section class="player-container">
+            <div class="video-wrapper">
+                <video id="player" preload="metadata"></video>
+                <!-- Stylizowane kontrolki -->
+                <div class="player-controls">
+                    <div class="progress-bar-container" id="progress-container">
+                        <div class="progress-bar" id="progress-bar"></div>
+                    </div>
+                    <div class="controls-row">
+                        <div class="controls-left">
+                            <button class="ctrl-btn" id="play-btn">▶</button>
+                            <span class="time-display"><span id="curr-time">0:00</span> / <span id="dur-time">0:00</span></span>
+                        </div>
+                        <div class="controls-right">
+                            <button class="ctrl-btn" id="fs-btn">⛶</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div class="search-wrap">
-            <input type="text" id="search-box" placeholder="Szukaj hitu DiscoAdamusa (np. 67, PHONK, BANAN)...">
-        </div>
+            <h1 id="now-playing">Wybierz utwór z listy...</h1>
+            <div class="meta-bar">
+                <div class="cdn-badge">
+                    <div class="cdn-dot"></div>
+                    <span>GitHub Releases CDN · 1080p</span>
+                </div>
+            </div>
+        </section>
 
-        <div class="playlist-header">
-            <h2>Playlista</h2>
-            <span id="track-count"></span>
-        </div>
+        <!-- Sidebar Playlist -->
+        <aside class="sidebar">
+            <div class="search-wrap">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search-box" placeholder="Szukaj w klastrze hitów...">
+            </div>
 
-        <div id="playlist-box">
-            <div class="loading-msg">Ładowanie playlisty...</div>
-        </div>
+            <div class="playlist-card">
+                <div class="playlist-header">
+                    <span class="playlist-title">Kolejka odtwarzania</span>
+                    <span id="track-count">0 utworów</span>
+                </div>
+                <div id="playlist-box">
+                    <div class="loading-msg">Ładowanie playlisty...</div>
+                </div>
+            </div>
+        </aside>
+    </main>
 
-        <footer>Kanon DiscoAdamusa · hostowane na GitHub Releases</footer>
-    </div>
+    <footer>
+        Kanon DiscoAdamusa 2026 · Zbudowane w estetyce kinowej
+    </footer>
 
     <script>
         let tracks = [];
@@ -393,10 +476,58 @@
         const searchBox = document.getElementById('search-box');
         const trackCount = document.getElementById('track-count');
 
+        // Elements do własnego audio/wideo odtwarzacza
+        const playBtn = document.getElementById('play-btn');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+        const currTimeEl = document.getElementById('curr-time');
+        const durTimeEl = document.getElementById('dur-time');
+        const fsBtn = document.getElementById('fs-btn');
+
+        function formatTime(sec) {
+            if (isNaN(sec)) return "0:00";
+            const m = Math.floor(sec / 60);
+            const s = Math.floor(sec % 60);
+            return `${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+
+        /* Odtwarzacz Custom JS */
+        playBtn.addEventListener('click', () => {
+            if (player.paused) {
+                player.play();
+                playBtn.innerText = '⏸';
+            } else {
+                player.pause();
+                playBtn.innerText = '▶';
+            }
+        });
+
+        player.addEventListener('timeupdate', () => {
+            const pct = (player.currentTime / player.duration) * 100;
+            progressBar.style.width = `${pct}%`;
+            currTimeEl.innerText = formatTime(player.currentTime);
+            durTimeEl.innerText = formatTime(player.duration);
+        });
+
+        progressContainer.addEventListener('click', (e) => {
+            const rect = progressContainer.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            player.currentTime = pos * player.duration;
+        });
+
+        fsBtn.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                player.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        });
+
+        /* Playlista Logic */
         function renderPlaylist(list) {
             playlistBox.innerHTML = '';
             if (list.length === 0) {
-                playlistBox.innerHTML = '<div class="loading-msg">Brak wyników wyszukiwania 👁️👄👁️</div>';
+                playlistBox.innerHTML = '<div class="loading-msg">Brak wyników 👁️👄👁️</div>';
                 return;
             }
 
@@ -411,14 +542,15 @@
 
                 const thumbHtml = track.thumbnail
                     ? `<img class="track-thumb" src="${track.thumbnail}" alt="" loading="lazy">`
-                    : `<div class="track-thumb placeholder">🎬</div>`;
+                    : `<div class="track-thumb placeholder">🎵</div>`;
 
                 item.innerHTML = `
-                    <span class="track-num">${track.id}</span>
-                    ${thumbHtml}
+                    <div class="track-thumb-wrap">
+                        ${thumbHtml}
+                    </div>
                     <div class="track-info">
-                        <span class="track-title">${track.title}</span>
-                        <span class="track-size">${track.size}</span>
+                        <div class="track-title">${track.title}</div>
+                        <div class="track-meta">#${track.id} · ${track.size || 'HD'}</div>
                     </div>
                 `;
                 item.addEventListener('click', () => playTrackById(track.id, true));
@@ -443,8 +575,13 @@
 
             const track = tracks[trackIndex];
             player.src = track.url;
-            nowPlaying.innerText = `${track.id}. ${track.title}`;
-            player.play().catch(() => {});
+            nowPlaying.innerText = `${track.title}`;
+            
+            player.play().then(() => {
+                playBtn.innerText = '⏸';
+            }).catch(() => {
+                playBtn.innerText = '▶';
+            });
 
             if (updateUrl) {
                 setIdInUrl(track.id);
@@ -482,12 +619,11 @@
             })
             .then(data => {
                 tracks = data;
-                trackCount.innerText = `${tracks.length} ${tracks.length === 1 ? 'utwór' : 'utworów'}`;
+                trackCount.innerText = `${tracks.length} utworów`;
                 renderPlaylist(tracks);
 
                 if (tracks.length === 0) return;
 
-                // Obsługa ?id=X w adresie URL - jeśli podano prawidłowe ID, odtwórz je od razu.
                 const requestedId = getCurrentIdFromUrl();
                 const requestedTrack = tracks.find(t => String(t.id) === String(requestedId));
 
@@ -498,8 +634,8 @@
                 }
             })
             .catch(err => {
-                playlistBox.innerHTML = `<div class="error-msg">❌ Nie udało się załadować playlisty (${err.message})</div>`;
-                console.error('Błąd ładowania tracks.json:', err);
+                playlistBox.innerHTML = `<div class="error-msg">❌ Błąd ładowania playlisty (${err.message})</div>`;
+                console.error(err);
             });
     </script>
 </body>
