@@ -2,7 +2,7 @@ import json
 import yt_dlp
 
 CHANNELS = [
-    {"name": "YouTube", "url": "https://www.youtube.com/channel/UC7wqel4udl9FaiyH5v78zQg/live"},
+    {"name": "YouTube", "url": "https://www.youtube.com/channel/UCSJ4gkVC6NrvII8umztf0Ow/live"},
     {"name": "TikTok", "url": "https://www.tiktok.com/@discoadamus/live"}
 ]
 
