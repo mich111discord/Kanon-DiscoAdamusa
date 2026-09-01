@@ -1,0 +1,72 @@
+name: Update Live Status
+
+on:
+  workflow_dispatch:
+    inputs:
+      is_live:
+        description: 'Czy stream jest aktywny?'
+        required: true
+        type: boolean
+        default: true
+      platform:
+        description: 'Platforma (youtube lub tiktok)'
+        required: true
+        type: choice
+        options:
+          - youtube
+          - tiktok
+        default: 'youtube'
+      title:
+        description: 'Tytuł transmisji'
+        required: false
+        type: string
+        default: 'Kanon DiscoAdamusa - Live Stream'
+      stream_target:
+        description: 'ID wideo YouTube LUB nazwa użytkownika TikTok (np. @discoadamus)'
+        required: false
+        type: string
+
+jobs:
+  update-json:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repozytorium
+        uses: actions/checkout@v4
+
+      - name: Aktualizacja pliku live.json
+        run: |
+          if [ "${{ inputs.is_live }}" = "true" ]; then
+            if [ "${{ inputs.platform }}" = "youtube" ]; then
+              cat <<EOF > live.json
+          {
+            "isLive": true,
+            "platform": "youtube",
+            "title": "${{ inputs.title }}",
+            "youtubeVideoId": "${{ inputs.stream_target }}"
+          }
+          EOF
+            else
+              cat <<EOF > live.json
+          {
+            "isLive": true,
+            "platform": "tiktok",
+            "title": "${{ inputs.title }}",
+            "tiktokUser": "${{ inputs.stream_target }}"
+          }
+          EOF
+            fi
+          else
+            cat <<EOF > live.json
+          {
+            "isLive": false
+          }
+          EOF
+          fi
+
+      - name: Commit i push zmian do repozytorium
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add live.json
+          git commit -m "Update live status [skip ci]" || exit 0
+          git push
