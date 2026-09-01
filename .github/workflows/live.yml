@@ -1,96 +1,36 @@
-name: Update Live Status
+name: Automatyczny Wykrywacz Live
 
 on:
   schedule:
     - cron: '* * * * *'
   workflow_dispatch:
-    inputs:
-      force_manual:
-        description: 'Czy wymusić ręczne ustawienie statusu?'
-        required: false
-        type: boolean
-        default: false
-      is_live:
-        description: 'Czy stream jest aktywny?'
-        required: true
-        type: boolean
-        default: true
-      platform:
-        description: 'Platforma (youtube lub tiktok)'
-        required: true
-        type: choice
-        options:
-          - youtube
-          - tiktok
-        default: 'youtube'
-      title:
-        description: 'Tytuł transmisji'
-        required: false
-        type: string
-        default: 'Kanon DiscoAdamusa - Live Stream'
-      stream_target:
-        description: 'ID wideo YT lub nazwa TikTok (@discoadamus)'
-        required: false
-        type: string
 
 permissions:
   contents: write
 
 jobs:
-  update-live:
+  check-live:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Pobieranie repozytorium
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Konfiguracja Pythona
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Install dependencies
+      - name: Instalacja yt-dlp
         run: |
           pip install yt-dlp
 
-      - name: Run automatic extractor script (YouTube & TikTok)
-        if: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.force_manual == false) }}
+      - name: Wykrywanie transmisji
         run: |
           python get_stream.py
 
-      - name: Manual update fallback
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.force_manual == true }}
-        run: |
-          if [ "${{ inputs.is_live }}" = "true" ]; then
-            if [ "${{ inputs.platform }}" = "youtube" ]; then
-              cat <<EOF > live.json
-          {
-            "isLive": true,
-            "platform": "youtube",
-            "title": "${{ inputs.title }}",
-            "youtubeVideoId": "${{ inputs.stream_target }}"
-          }
-          EOF
-            else
-              cat <<EOF > live.json
-          {
-            "isLive": true,
-            "platform": "tiktok",
-            "title": "${{ inputs.title }}",
-            "tiktokUser": "${{ inputs.stream_target }}"
-          }
-          EOF
-            fi
-          else
-            cat <<EOF > live.json
-          {
-            "isLive": false
-          }
-          EOF
-          fi
-
-      - name: Commit and Push changes
+      - name: Zapis wyników do repozytorium
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add stream.json live.json 2>/dev/null || true
-          git diff --staged --quiet || (git commit -m "Update live streams status [skip ci]" && git push)
+          git add stream.json
+          git diff --staged --quiet || (git commit -m "Auto-update live m3u8" && git push)
