@@ -7,12 +7,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         :root {
             --bg: #0f0f0f;
             --panel: #181818;
-            --panel-hover: #272727;
             --border: #222222;
             --red: #ff0000;
             --text: #f1f1f1;
@@ -159,7 +157,7 @@
             aspect-ratio: 16 / 9;
         }
 
-        iframe, video {
+        iframe {
             width: 100%;
             height: 100%;
             border: none;
@@ -255,12 +253,12 @@
 <body>
 
     <header>
-        <a href="index.html" class="brand">
+        <a href="https://mich111discord.github.io/Kanon-DiscoAdamusa" class="brand">
             <span class="brand-logo">👑</span>
             <span class="brand-title">Kanon DiscoAdamusa</span>
         </a>
         <div class="nav-right">
-            <a href="index.html" class="nav-link">Strona Główna</a>
+            <a href="https://mich111discord.github.io/Kanon-DiscoAdamusa" class="nav-link">Strona Główna</a>
             <div class="live-badge">
                 <div class="live-dot"></div>
                 <span>LIVE</span>
@@ -335,33 +333,22 @@
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                                 allowfullscreen></iframe>
                     `;
+                    const currentDomain = window.location.hostname || 'mich111discord.github.io';
                     chatBox.innerHTML = `
                         <iframe class="chat-iframe" 
-                                src="https://www.youtube.com/live_chat?v=${data.youtubeVideoId}&embed_domain=${location.hostname}"></iframe>
+                                src="https://www.youtube.com/live_chat?v=${data.youtubeVideoId}&embed_domain=${currentDomain}"></iframe>
                     `;
-                } else if (data.platform === "kick") {
-                    platformInfo.innerHTML = `<span class="platform-tag">Platforma: Kick</span>`;
+                } else if (data.platform === "tiktok") {
+                    platformInfo.innerHTML = `<span class="platform-tag">Platforma: TikTok Live</span>`;
                     playerBox.innerHTML = `
-                        <iframe src="https://player.kick.com/${data.kickChannel}" 
+                        <iframe src="https://www.tiktok.com/embed/live/${data.tiktokUser}" 
                                 allowfullscreen></iframe>
                     `;
                     chatBox.innerHTML = `
-                        <iframe class="chat-iframe" 
-                                src="https://kick.com/popout/${data.kickChannel}/chat"></iframe>
+                        <div class="offline-state">
+                            <p>Czat TikTok Live jest widoczny bezpośrednio w odtwarzaczu lub w aplikacji TikTok.</p>
+                        </div>
                     `;
-                } else if (data.platform === "hls") {
-                    platformInfo.innerHTML = `<span class="platform-tag">Platforma: Direct Stream (HLS)</span>`;
-                    playerBox.innerHTML = `<video id="hls-player" controls autoplay></video>`;
-                    chatBox.innerHTML = `<div class="offline-state"><p>Czat zewnętrzny dla transmisji HLS nie jest podpięty.</p></div>`;
-                    
-                    const video = document.getElementById('hls-player');
-                    if (Hls.isSupported()) {
-                        const hls = new Hls();
-                        hls.loadSource(data.hlsUrl);
-                        hls.attachMedia(video);
-                    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                        video.src = data.hlsUrl;
-                    }
                 }
             } catch (err) {
                 console.error("Błąd podczas ładowania strumienia:", err);
