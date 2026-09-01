@@ -1,5 +1,17 @@
 {
-  "is_live": false,
-  "platform": null,
-  "m3u8_url": ""
+  "any_live": false,
+  "streams": {
+    "youtube": {
+      "name": "YouTube",
+      "is_live": false,
+      "title": "",
+      "m3u8_url": ""
+    },
+    "tiktok": {
+      "name": "TikTok",
+      "is_live": false,
+      "title": "",
+      "m3u8_url": ""
+    }
+  }
 }
