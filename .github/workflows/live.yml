@@ -1,43 +1,15 @@
-name: Fetch M3U8 Live Stream
+name: Update Live Status
 
 on:
   schedule:
     - cron: '* * * * *'
   workflow_dispatch:
-
-permissions:
-  contents: write
-
-jobs:
-  update-m3u8:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
-      - name: Install dependencies
-        run: |
-          pip install yt-dlp
-
-      - name: Run extractor script
-        run: |
-          python get_stream.py
-
-      - name: Commit and Push changes
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add stream.json
-          git diff --staged --quiet || (git commit -m "Update live m3u8 URL" && git push)name: Update Live Status
-
-on:
-  workflow_dispatch:
     inputs:
+      force_manual:
+        description: 'Czy wymusić ręczne ustawienie statusu?'
+        required: false
+        type: boolean
+        default: false
       is_live:
         description: 'Czy stream jest aktywny?'
         required: true
@@ -57,18 +29,36 @@ on:
         type: string
         default: 'Kanon DiscoAdamusa - Live Stream'
       stream_target:
-        description: 'ID wideo YouTube LUB nazwa użytkownika TikTok (np. @discoadamus)'
+        description: 'ID wideo YT lub nazwa TikTok (@discoadamus)'
         required: false
         type: string
 
+permissions:
+  contents: write
+
 jobs:
-  update-json:
+  update-live:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repozytorium
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Aktualizacja pliku live.json
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install yt-dlp
+
+      - name: Run automatic extractor script (YouTube & TikTok)
+        if: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.force_manual == false) }}
+        run: |
+          python get_stream.py
+
+      - name: Manual update fallback
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.force_manual == true }}
         run: |
           if [ "${{ inputs.is_live }}" = "true" ]; then
             if [ "${{ inputs.platform }}" = "youtube" ]; then
@@ -98,10 +88,9 @@ jobs:
           EOF
           fi
 
-      - name: Commit i push zmian do repozytorium
+      - name: Commit and Push changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add live.json
-          git commit -m "Update live status [skip ci]" || exit 0
-          git push
+          git add stream.json live.json 2>/dev/null || true
+          git diff --staged --quiet || (git commit -m "Update live streams status [skip ci]" && git push)
