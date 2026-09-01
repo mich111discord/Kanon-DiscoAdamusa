@@ -1,44 +1,70 @@
 import json
 import yt_dlp
 
-CHANNELS = [
-    {"name": "YouTube", "url": "https://www.youtube.com/channel/UCSJ4gkVC6NrvII8umztf0Ow/live"},
-    {"name": "TikTok", "url": "https://www.tiktok.com/@discoadamus/live"}
-]
+TARGETS = {
+    "youtube": {
+        "name": "YouTube",
+        "url": "https://www.youtube.com/channel/UC7wqel4udl9FaiyH5v78zQg/live"
+    },
+    "tiktok": {
+        "name": "TikTok",
+        "url": "https://www.tiktok.com/@discoadamus/live"
+    }
+}
 
 OUTPUT_FILE = "stream.json"
 
-def get_m3u8(url):
+def check_stream(url):
     ydl_opts = {
         'quiet': True,
         'no_warnings': True,
         'skip_download': True,
         'format': 'best',
+        # Bypass blokady bota YouTube na serwerach GitHub:
+        'extractor_args': {
+            'youtube': {
+                'player_client': ['ios', 'mweb']
+            }
+        }
     }
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
             if info.get('is_live') or info.get('live_status') == 'is_live':
-                return info.get('url')
-    except Exception:
-        return None
-    return None
+                return {
+                    "is_live": True,
+                    "title": info.get('title', 'Live Stream'),
+                    "m3u8_url": info.get('url', '')
+                }
+    except Exception as e:
+        print(f"Błąd przy pobieraniu {url}: {e}")
+    
+    return {"is_live": False, "title": "", "m3u8_url": ""}
 
 def main():
-    result = {"is_live": False, "platform": None, "m3u8_url": ""}
+    result = {
+        "any_live": False,
+        "streams": {}
+    }
 
-    for channel in CHANNELS:
-        m3u8_url = get_m3u8(channel["url"])
-        if m3u8_url:
-            result = {
-                "is_live": True,
-                "platform": channel["name"],
-                "m3u8_url": m3u8_url
-            }
-            break
+    for key, data in TARGETS.items():
+        print(f"Sprawdzanie {data['name']}...")
+        stream_info = check_stream(data["url"])
+        
+        result["streams"][key] = {
+            "name": data["name"],
+            "is_live": stream_info["is_live"],
+            "title": stream_info["title"],
+            "m3u8_url": stream_info["m3u8_url"]
+        }
+        
+        if stream_info["is_live"]:
+            result["any_live"] = True
 
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-        json.dump(result, f, indent=2)
+        json.dump(result, f, ensure_ascii=False, indent=2)
+
+    print("Poprawnie zapisano status do stream.json")
 
 if __name__ == "__main__":
     main()
