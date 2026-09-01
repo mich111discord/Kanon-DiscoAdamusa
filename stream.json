@@ -1,5 +1,5 @@
 {
   "is_live": true,
-  "platform": youtube,
+  "platform": null,
   "m3u8_url": "https://example.com"
 }
