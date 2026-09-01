@@ -4,7 +4,7 @@ import yt_dlp
 TARGETS = {
     "youtube": {
         "name": "YouTube",
-        "url": "https://www.youtube.com/channel/UC7wqel4udl9FaiyH5v78zQg/live"
+        "url": "https://www.youtube.com/channel/UCSJ4gkVC6NrvII8umztf0Ow/live"
     },
     "tiktok": {
         "name": "TikTok",
