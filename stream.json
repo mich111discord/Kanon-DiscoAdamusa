@@ -1,5 +1,5 @@
 {
-  "is_live": true,
+  "is_live": false,
   "platform": null,
-  "m3u8_url": "https://example.com"
+  "m3u8_url": ""
 }
