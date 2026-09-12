@@ -1,5 +1,5 @@
 {
-  "any_live": true,
+  "any_live": false,
   "streams": {
     "youtube": {
       "name": "YouTube",
@@ -9,9 +9,9 @@
     },
     "tiktok": {
       "name": "TikTok",
-      "is_live": true,
-      "title": "tiktok-live video #7684762625711835937 2026-09-12 21:29",
-      "m3u8_url": "https://pull-hls-f16-tt03.tiktokcdn.com/stage/stream-4443530061234045821_hd/index.m3u8?expire=1790458188&sign=e7c2baa7a9e226be4e947954a916b344"
+      "is_live": false,
+      "title": "",
+      "m3u8_url": ""
     }
   }
 }
