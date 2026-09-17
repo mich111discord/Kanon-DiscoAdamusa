@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
             --bg: #0f0f0f;
@@ -19,6 +20,8 @@
             --text-dim: #aaa;
             --discord: #5865F2;
             --radius: 12px;
+            --badge-new: #10b981;
+            --badge-hot: #ef4444;
         }
 
         * {
@@ -34,6 +37,66 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+        }
+
+        /* Preloader Screen */
+        #loader-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--bg);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        #loader-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-logo {
+            font-size: 3rem;
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        .loader-gif-container {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loader-gif {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .loader-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid var(--red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
         }
 
         header {
@@ -55,8 +118,8 @@
             text-decoration: none;
         }
 
-        .brand-logo {
-            font-size: 1.6rem;
+        .brand-logo-icon {
+            color: #f59e0b;
         }
 
         .brand-title {
@@ -124,7 +187,6 @@
             display: block;
         }
 
-        /* Udoskonalony nakładany interfejs odtwarzacza */
         .player-controls {
             position: absolute;
             bottom: 0;
@@ -184,13 +246,13 @@
             border: none;
             color: #fff;
             cursor: pointer;
-            font-size: 1.1rem;
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 4px;
-            border-radius: 50%;
-            transition: background 0.2s, transform 0.1s;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 18px;
+            font-size: 0.85rem;
+            transition: background 0.2s, transform 0.1s, color 0.2s;
         }
 
         .ctrl-btn:hover {
@@ -198,10 +260,13 @@
         }
 
         .ctrl-btn:active {
-            transform: scale(0.9);
+            transform: scale(0.95);
         }
 
-        /* Kontrola głośności */
+        .ctrl-btn.saved {
+            color: #ef4444;
+        }
+
         .volume-group {
             display: flex;
             align-items: center;
@@ -271,24 +336,6 @@
             gap: 6px;
         }
 
-        .cdn-badge {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: var(--panel);
-            padding: 6px 12px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-        }
-
-        .cdn-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #2ba640;
-            border-radius: 50%;
-            box-shadow: 0 0 6px #2ba640;
-        }
-
         .sidebar {
             display: flex;
             flex-direction: column;
@@ -297,6 +344,8 @@
 
         .search-wrap {
             position: relative;
+            display: flex;
+            align-items: center;
         }
 
         #search-box {
@@ -317,10 +366,8 @@
         .search-icon {
             position: absolute;
             left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
             color: var(--text-dim);
-            font-size: 0.9rem;
+            pointer-events: none;
         }
 
         .playlist-card {
@@ -330,7 +377,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            max-height: 650px;
+            max-height: calc(100vh - 180px);
         }
 
         .playlist-header {
@@ -342,9 +389,35 @@
             justify-content: space-between;
         }
 
+        .playlist-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .playlist-title {
             font-size: 0.95rem;
             font-weight: 700;
+        }
+
+        .filter-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active {
+            background-color: rgba(239, 68, 68, 0.2);
+            border-color: var(--badge-hot);
+            color: #fff;
         }
 
         #track-count {
@@ -358,10 +431,12 @@
             display: flex;
             flex-direction: column;
             gap: 4px;
+            max-height: 100%;
         }
 
         .track-item {
             display: flex;
+            align-items: center;
             gap: 10px;
             padding: 6px;
             border-radius: 8px;
@@ -397,8 +472,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
             background: #202020;
+            color: var(--text-dim);
         }
 
         .track-info {
@@ -407,6 +482,14 @@
             justify-content: center;
             gap: 4px;
             min-width: 0;
+            flex-grow: 1;
+        }
+
+        .track-title-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
         }
 
         .track-title {
@@ -425,9 +508,56 @@
             color: #3ea6ff;
         }
 
+        .save-btn {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s, transform 0.1s;
+        }
+
+        .save-btn:hover {
+            color: #ef4444;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .save-btn.saved {
+            color: #ef4444;
+        }
+
+        .badge {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 5px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .badge-new {
+            background-color: var(--badge-new);
+            color: #000;
+        }
+
+        .badge-hot {
+            background-color: var(--badge-hot);
+            color: #fff;
+        }
+
         .track-meta {
             font-size: 0.75rem;
             color: var(--text-dim);
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
         #playlist-box::-webkit-scrollbar {
@@ -453,16 +583,41 @@
             color: var(--text-dim);
             border-top: 1px solid var(--border);
         }
+
+        .version-badge {
+            position: fixed;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(24, 24, 24, 0.85);
+            border: 1px solid var(--border);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            z-index: 1000;
+            pointer-events: none;
+            backdrop-filter: blur(4px);
+        }
     </style>
 </head>
 <body>
 
+    <div id="loader-screen">
+        <div class="loader-logo">👑</div>
+        <div class="loader-gif-container">
+            <img src="https://i.gifer.com/ZZ5H.gif" alt="Ładowanie..." class="loader-gif" onerror="this.style.display='none'; document.getElementById('alt-spinner').style.display='block';">
+            <div id="alt-spinner" class="loader-spinner" style="display:none;"></div>
+        </div>
+        <div style="font-size: 0.9rem; color: var(--text-dim);">Ładowanie hitów DiscoAdamusa...</div>
+    </div>
+
     <header>
         <a href="#" class="brand">
-            <span class="brand-logo">👑</span>
+            <i data-lucide="crown" class="brand-logo-icon"></i>
             <span class="brand-title">Kanon DiscoAdamusa</span>
         </a>
         <a href="https://discord.gg/ErbWv3kKCB" target="_blank" class="discord-btn">
+            <i data-lucide="message-square" style="width:16px; height:16px;"></i>
             Dołącz do Discorda
         </a>
     </header>
@@ -477,15 +632,25 @@
                     </div>
                     <div class="controls-row">
                         <div class="controls-left">
-                            <button class="ctrl-btn" id="play-btn" title="Odtwórz / Pauza (Spacja)">▶</button>
+                            <button class="ctrl-btn" id="play-btn" title="Odtwórz / Pauza (Spacja)">
+                                <i data-lucide="play"></i>
+                            </button>
+                            <button class="ctrl-btn" id="save-player-btn" title="Zapisz utwór">
+                                <i data-lucide="bookmark" id="save-player-icon"></i>
+                                <span id="save-player-text">Zapisz</span>
+                            </button>
                             <div class="volume-group">
-                                <button class="ctrl-btn" id="mute-btn" title="Wycisz">🔊</button>
+                                <button class="ctrl-btn" id="mute-btn" title="Wycisz">
+                                    <i data-lucide="volume-2"></i>
+                                </button>
                                 <input type="range" id="volume-slider" class="volume-slider" min="0" max="1" step="0.05" value="1">
                             </div>
                             <span class="time-display"><span id="curr-time">0:00</span> / <span id="dur-time">0:00</span></span>
                         </div>
                         <div class="controls-right">
-                            <button class="ctrl-btn" id="fs-btn" title="Pełny ekran">⛶</button>
+                            <button class="ctrl-btn" id="fs-btn" title="Pełny ekran">
+                                <i data-lucide="maximize"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -494,24 +659,28 @@
             <h1 id="now-playing">Wybierz utwór z listy...</h1>
             <div class="meta-bar">
                 <div class="meta-left">
-                    <span class="views-count" id="views-count">👁️ -- odtworzeń</span>
-                </div>
-                <div class="cdn-badge">
-                    <div class="cdn-dot"></div>
-                    <span>GitHub Releases CDN · 1080p</span>
+                    <span class="views-count" id="views-count">
+                        <i data-lucide="eye" style="width: 16px; height: 16px;"></i>
+                        <span>-- odtworzeń</span>
+                    </span>
                 </div>
             </div>
         </section>
 
         <aside class="sidebar">
             <div class="search-wrap">
-                <span class="search-icon">🔍</span>
+                <i data-lucide="search" class="search-icon" style="width: 18px; height: 18px;"></i>
                 <input type="text" id="search-box" placeholder="Szukaj w klastrze hitów...">
             </div>
 
             <div class="playlist-card">
                 <div class="playlist-header">
-                    <span class="playlist-title">Kolejka odtwarzania</span>
+                    <div class="playlist-title-wrap">
+                        <span class="playlist-title">Kolejka</span>
+                        <button id="filter-saved-btn" class="filter-btn" title="Pokaż tylko zapisane">
+                            <i data-lucide="bookmark" style="width:12px; height:12px;"></i> Zapisane
+                        </button>
+                    </div>
                     <span id="track-count">0 utworów</span>
                 </div>
                 <div id="playlist-box">
@@ -525,13 +694,16 @@
         Kanon DiscoAdamusa 2026 · Zbudowane w estetyce kinowej
     </footer>
 
+    <div class="version-badge">Kanon v1.0.4</div>
+
     <script>
-        
         const GITHUB_REPO_OWNER = "mich111discord";
         const GITHUB_REPO_NAME = "Kanon-DiscoAdamusa";
 
         let tracks = [];
         let githubDownloadsMap = {};
+        let showOnlySaved = false;
+        let currentTrackId = null;
 
         const videoWrapper = document.getElementById('video-wrapper');
         const player = document.getElementById('player');
@@ -540,8 +712,12 @@
         const searchBox = document.getElementById('search-box');
         const trackCount = document.getElementById('track-count');
         const viewsCount = document.getElementById('views-count');
+        const loaderScreen = document.getElementById('loader-screen');
+        const filterSavedBtn = document.getElementById('filter-saved-btn');
 
         const playBtn = document.getElementById('play-btn');
+        const savePlayerBtn = document.getElementById('save-player-btn');
+        const savePlayerText = document.getElementById('save-player-text');
         const muteBtn = document.getElementById('mute-btn');
         const volumeSlider = document.getElementById('volume-slider');
         const progressContainer = document.getElementById('progress-container');
@@ -549,6 +725,74 @@
         const currTimeEl = document.getElementById('curr-time');
         const durTimeEl = document.getElementById('dur-time');
         const fsBtn = document.getElementById('fs-btn');
+
+        function getSavedTracks() {
+            try {
+                const local = localStorage.getItem('savedTracks');
+                if (local) return JSON.parse(local);
+            } catch (e) {}
+            
+            const name = "savedTracks=";
+            const decoded = decodeURIComponent(document.cookie);
+            const ca = decoded.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i].trim();
+                if (c.indexOf(name) === 0) {
+                    const val = c.substring(name.length, c.length);
+                    return val ? val.split(',').map(String) : [];
+                }
+            }
+            return [];
+        }
+
+        function toggleSaveTrack(id) {
+            if (!id) return;
+            let saved = getSavedTracks().map(String);
+            const idStr = String(id);
+            if (saved.includes(idStr)) {
+                saved = saved.filter(item => item !== idStr);
+            } else {
+                saved.push(idStr);
+            }
+
+            try {
+                localStorage.setItem('savedTracks', JSON.stringify(saved));
+            } catch (e) {}
+
+            const d = new Date();
+            d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
+            document.cookie = `savedTracks=${saved.join(',')}; expires=${d.toUTCString()}; path=/`;
+
+            updateSavePlayerButtonState();
+            applyFiltersAndRender();
+        }
+
+        function updateSavePlayerButtonState() {
+            if (!currentTrackId) {
+                savePlayerBtn.style.display = 'none';
+                return;
+            }
+            savePlayerBtn.style.display = 'inline-flex';
+            const saved = getSavedTracks().map(String);
+            const isSaved = saved.includes(String(currentTrackId));
+
+            if (isSaved) {
+                savePlayerBtn.classList.add('saved');
+                savePlayerText.innerText = 'Zapisano';
+                savePlayerBtn.innerHTML = `<i data-lucide="bookmark-check" fill="currentColor"></i><span>Zapisano</span>`;
+            } else {
+                savePlayerBtn.classList.remove('saved');
+                savePlayerText.innerText = 'Zapisz';
+                savePlayerBtn.innerHTML = `<i data-lucide="bookmark"></i><span>Zapisz</span>`;
+            }
+            lucide.createIcons();
+        }
+
+        savePlayerBtn.addEventListener('click', () => {
+            if (currentTrackId) {
+                toggleSaveTrack(currentTrackId);
+            }
+        });
 
         function formatTime(sec) {
             if (isNaN(sec)) return "0:00";
@@ -567,7 +811,6 @@
             }
         }
 
-        // Pobieranie liczby pobrań z GitHub API
         async function fetchGitHubDownloads() {
             try {
                 const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/releases`);
@@ -586,15 +829,15 @@
             }
         }
 
-        // Obsługa sterowania wideo
         function togglePlay() {
             if (player.paused) {
                 player.play();
-                playBtn.innerText = '⏸';
+                playBtn.innerHTML = '<i data-lucide="pause"></i>';
             } else {
                 player.pause();
-                playBtn.innerText = '▶';
+                playBtn.innerHTML = '<i data-lucide="play"></i>';
             }
+            lucide.createIcons();
         }
 
         playBtn.addEventListener('click', togglePlay);
@@ -611,7 +854,6 @@
             }
         });
 
-        // Ukrywanie paska po bezczynności myszy
         let controlsTimeout;
         videoWrapper.addEventListener('mousemove', () => {
             videoWrapper.classList.remove('hide-controls');
@@ -636,7 +878,6 @@
             player.currentTime = pos * player.duration;
         });
 
-        // Kontrola dźwięku
         volumeSlider.addEventListener('input', (e) => {
             player.volume = e.target.value;
             player.muted = player.volume === 0;
@@ -655,12 +896,13 @@
 
         function updateMuteIcon() {
             if (player.muted || player.volume === 0) {
-                muteBtn.innerText = '🔇';
+                muteBtn.innerHTML = '<i data-lucide="volume-x"></i>';
             } else if (player.volume < 0.5) {
-                muteBtn.innerText = '🔉';
+                muteBtn.innerHTML = '<i data-lucide="volume-1"></i>';
             } else {
-                muteBtn.innerText = '🔊';
+                muteBtn.innerHTML = '<i data-lucide="volume-2"></i>';
             }
+            lucide.createIcons();
         }
 
         function toggleFullscreen() {
@@ -673,7 +915,6 @@
 
         fsBtn.addEventListener('click', toggleFullscreen);
 
-        // Skróty klawiszowe
         document.addEventListener('keydown', (e) => {
             if (document.activeElement.tagName === 'INPUT') return;
             if (e.code === 'Space') {
@@ -687,9 +928,11 @@
         function renderPlaylist(list) {
             playlistBox.innerHTML = '';
             if (list.length === 0) {
-                playlistBox.innerHTML = '<div class="loading-msg">Brak wyników 👁️👄👁️</div>';
+                playlistBox.innerHTML = '<div class="loading-msg">Brak utworów</div>';
                 return;
             }
+
+            const savedTrackIds = getSavedTracks().map(String);
 
             list.forEach((track) => {
                 const item = document.createElement('div');
@@ -702,25 +945,76 @@
 
                 const filename = extractFilename(track.url);
                 const downloads = githubDownloadsMap[filename] !== undefined ? githubDownloadsMap[filename] : null;
-                const viewsText = downloads !== null ? ` · 👁️ ${downloads}` : '';
+                const viewsText = downloads !== null ? ` · <i data-lucide="eye" style="width:12px;height:12px;display:inline;"></i> ${downloads}` : '';
 
                 const thumbHtml = track.thumbnail
                     ? `<img class="track-thumb" src="${track.thumbnail}" alt="" loading="lazy">`
-                    : `<div class="track-thumb placeholder">🎵</div>`;
+                    : `<div class="track-thumb placeholder"><i data-lucide="music"></i></div>`;
+
+                let badgesHtml = '';
+                if (track.isNew) {
+                    badgesHtml += `<span class="badge badge-new">NEW</span>`;
+                }
+                if (track.isHot) {
+                    badgesHtml += `<span class="badge badge-hot"><i data-lucide="flame" style="width:10px;height:10px;"></i> HOT</span>`;
+                }
+
+                const isSaved = savedTrackIds.includes(String(track.id));
+                const bookmarkIcon = isSaved ? 'bookmark-check' : 'bookmark';
+                const bookmarkClass = isSaved ? 'save-btn saved' : 'save-btn';
 
                 item.innerHTML = `
                     <div class="track-thumb-wrap">
                         ${thumbHtml}
                     </div>
                     <div class="track-info">
-                        <div class="track-title">${track.title}</div>
+                        <div class="track-title-container">
+                            <span class="track-title">${track.title}</span>
+                            ${badgesHtml}
+                        </div>
                         <div class="track-meta">#${track.id} · ${track.size || 'HD'}${viewsText}</div>
                     </div>
+                    <button class="${bookmarkClass}" data-id="${track.id}" title="${isSaved ? 'Usuń z zapisanych' : 'Zapisz utwór'}">
+                        <i data-lucide="${bookmarkIcon}" ${isSaved ? 'fill="currentColor"' : ''} style="width:16px; height:16px;"></i>
+                    </button>
                 `;
-                item.addEventListener('click', () => playTrackById(track.id, true));
+
+                item.addEventListener('click', (e) => {
+                    if (e.target.closest('.save-btn')) return;
+                    playTrackById(track.id, true);
+                });
+
+                const saveBtn = item.querySelector('.save-btn');
+                saveBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleSaveTrack(track.id);
+                });
+
                 playlistBox.appendChild(item);
             });
+
+            lucide.createIcons();
         }
+
+        function applyFiltersAndRender() {
+            const query = searchBox.value.toLowerCase().trim();
+            const savedTrackIds = getSavedTracks().map(String);
+
+            let filtered = tracks.filter(track => {
+                const matchesSearch = track.title.toLowerCase().includes(query);
+                const matchesSaved = showOnlySaved ? savedTrackIds.includes(String(track.id)) : true;
+                return matchesSearch && matchesSaved;
+            });
+
+            trackCount.innerText = `${filtered.length} utworów`;
+            renderPlaylist(filtered);
+        }
+
+        filterSavedBtn.addEventListener('click', () => {
+            showOnlySaved = !showOnlySaved;
+            filterSavedBtn.classList.toggle('active', showOnlySaved);
+            applyFiltersAndRender();
+        });
 
         function getCurrentIdFromUrl() {
             const params = new URLSearchParams(window.location.search);
@@ -737,6 +1031,9 @@
             const trackIndex = tracks.findIndex(t => String(t.id) === String(id));
             if (trackIndex === -1) return;
 
+            currentTrackId = id;
+            updateSavePlayerButtonState();
+
             const track = tracks[trackIndex];
             player.src = track.url;
             nowPlaying.innerText = `${track.title}`;
@@ -744,16 +1041,17 @@
             const filename = extractFilename(track.url);
             const downloads = githubDownloadsMap[filename];
             if (downloads !== undefined) {
-                viewsCount.innerText = `👁️ ${downloads.toLocaleString()} odtworzeń`;
+                viewsCount.innerHTML = `<i data-lucide="eye" style="width: 16px; height: 16px;"></i> <span>${downloads.toLocaleString()} odtworzeń</span>`;
             } else {
-                viewsCount.innerText = `👁️ -- odtworzeń`;
+                viewsCount.innerHTML = `<i data-lucide="eye" style="width: 16px; height: 16px;"></i> <span>-- odtworzeń</span>`;
             }
 
             player.play().then(() => {
-                playBtn.innerText = '⏸';
+                playBtn.innerHTML = '<i data-lucide="pause"></i>';
             }).catch(() => {
-                playBtn.innerText = '▶';
+                playBtn.innerHTML = '<i data-lucide="play"></i>';
             });
+            lucide.createIcons();
 
             if (updateUrl) {
                 setIdInUrl(track.id);
@@ -764,11 +1062,7 @@
             });
         }
 
-        searchBox.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase().trim();
-            const filtered = tracks.filter(track => track.title.toLowerCase().includes(query));
-            renderPlaylist(filtered);
-        });
+        searchBox.addEventListener('input', applyFiltersAndRender);
 
         player.addEventListener('ended', () => {
             const currentUrl = player.src;
@@ -784,7 +1078,6 @@
             }
         });
 
-        // Inicjalizacja danych
         async function init() {
             await fetchGitHubDownloads();
 
@@ -793,26 +1086,32 @@
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 tracks = await res.json();
                 
-                trackCount.innerText = `${tracks.length} utworów`;
-                renderPlaylist(tracks);
+                applyFiltersAndRender();
 
-                if (tracks.length === 0) return;
+                if (tracks.length > 0) {
+                    const requestedId = getCurrentIdFromUrl();
+                    const requestedTrack = tracks.find(t => String(t.id) === String(requestedId));
 
-                const requestedId = getCurrentIdFromUrl();
-                const requestedTrack = tracks.find(t => String(t.id) === String(requestedId));
-
-                if (requestedTrack) {
-                    playTrackById(requestedTrack.id, false);
-                } else {
-                    playTrackById(tracks[0].id, false);
+                    if (requestedTrack) {
+                        playTrackById(requestedTrack.id, false);
+                    } else {
+                        playTrackById(tracks[0].id, false);
+                    }
                 }
             } catch (err) {
                 playlistBox.innerHTML = `<div class="error-msg">❌ Błąd ładowania playlisty (${err.message})</div>`;
                 console.error(err);
+            } finally {
+                setTimeout(() => {
+                    loaderScreen.classList.add('hidden');
+                }, 500);
             }
         }
 
-        init();
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            init();
+        });
     </script>
 </body>
 </html>
